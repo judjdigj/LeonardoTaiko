@@ -45,8 +45,7 @@ void loop() {
         count = i+1;
       }
     }
-    Serial.println(temp);
-    Serial.println(key = count%4);
+    key = count%4;
     Keyboard.press(keymapping[key]);
     delay(outputDuration);
     Keyboard.releaseAll();
