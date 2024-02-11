@@ -22,6 +22,8 @@ Then convert it into HID keyboard or controller.
 
 You can also imply some smoothing filter to preprocessing the raw analog input signal. In my case, the sensors are good enough.
 
+I order to shorten the buffer loop and key pressing time for better latency and faster response, I imported dynamite threshold.
+
 ## Parameters Explain:
 
 ### ```threshold```
@@ -39,3 +41,19 @@ Also if it was set too small, button will be released faster than the signal len
 How many times will loop to read all 4 sensors' ```analogValue```. The smaller it was set, the faster response you will get after one hit. and it will more likely causing mistaken input.
 
 Since ```cd_length``` define one loop for all 4 sensors, ```buffer_size``` should be ```4*cd_length```.
+
+### ```k_increase```
+Every time a hit was detective, the threshold will change to the largest pin value multiplied by ```k_increase```. Which can prevent double input when the ```cd_length```/```buffer_size``` was set too low.
+
+### ```k_decay```
+Every loop the current threshold will multiply ```k_decay``` in order to go back to the original threshold.
+
+
+###
+
+## Credit
+Switch support from
+[Nintendo Switch Library](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/) by [lefmarna](https://github.com/lefmarna).  
+Algorithm inspired by multiple Taiko project, including:  
+ [ArduinoTaikoController](https://github.com/LuiCat/ArduinoTaikoController) by [LuiCat](https://github.com/LuiCat).  
+[Taiko-Input](https://github.com/sachikoxz12/Taiko-Input) by [sachikoxz12](https://github.com/sachikoxz12).
