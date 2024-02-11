@@ -1,6 +1,12 @@
 # LeonardoTaiko
 
-Taiko convert board with Arduino Leonardo. 
+Build Taiko e-box with Arduino Leonardo/ProMicro.   
+
+## Feature
+
+* Written in Arduino IDE.
+* Nintendo Switch Support
+* Easy to build.
 
 ## Hardware
 
