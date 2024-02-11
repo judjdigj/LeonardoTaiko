@@ -3,9 +3,9 @@
 #include <NintendoSwitchControlLibrary.h>
 
 
-const int min_threshold = 200;  // The minimum rate on triggering a input
+const float min_threshold = 100;  // The minimum rate on triggering a input
 const int outputDuration = 25;  // How long a key should be pressed when triggering a input.
-const int cd_length = 25; //Buffer loop times.
+const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
 
@@ -19,7 +19,7 @@ int buffer[buffer_size];
 int threshold = min_threshold;
 
 void setup() {
-  pushButton(Button::B, 500, 5); //initialize on switch
+  pushButton(Button::A, 500, 3); //initialize on switch
   Serial.begin(9600);
   Keyboard.begin();
 }
@@ -52,10 +52,12 @@ void loop() {
       }
     }
     threshold = temp*k_increase;
-    
     key = count%4;
-
+//    Serial.println(temp);
+//    Serial.println(threshold);
+//    Serial.println(key);
 //Uncomment to use Switch mode.
+
     SwitchControlLibrary().pressButton(keymapping_ns[key]);
     SwitchControlLibrary().sendReport();
     delay(outputDuration);
@@ -68,13 +70,14 @@ void loop() {
     delay(outputDuration);
     Keyboard.releaseAll();
 */
-
+  }
 //
   if(threshold < min_threshold){
     threshold = min_threshold;
   }
-  if(threshold > min_threshold){
+  else if(threshold > min_threshold){
     threshold = threshold*k_decay;
-    }
+//    Serial.println("DECAY");
+//    Serial.println(threshold);
   }
 }
