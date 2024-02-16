@@ -1,16 +1,23 @@
 # LeonardoTaiko
 
-Build Taiko e-box with Arduino Leonardo/ProMicro.   
+A basic and easy to use e-box with Arduino Leonardo/ProMicro.   
 
 ## Feature
 
 * Written in Arduino IDE.
 * Nintendo Switch Support
-* Easy to build.
+* Easy to use.
 
-## Hardware
+## How to use
 
-4 piezo sensors, for each sensor, one pin to A0-A3, another to the GND. piezo sensor will generate positive and negative voltage when working, so positive/negative to GND probably doesn't matter. However I'm not sure if negative voltage will cause any damage to ADC on Arduino Leonardo.  
+## Hardware Parts
+*Arduino Leonardo/Pro Micro
+*Piezo sensor x4
+*1MOhm resistor x4
+*Bread borad and wires(you can print your own pcb if you want)
+
+Note:
+4 piezo sensors, for each sensor, one pin to A0-A3, another to the GND. piezo sensor will generate ositive and negative voltage when working, so positive/negative to GND probably doesn't matter. However I'm not sure if negative voltage will cause any damage to ADC on Arduino Leonardo.  
 
 If that concern you, you can use diodes or diode bridges to fix this issue.  
 
