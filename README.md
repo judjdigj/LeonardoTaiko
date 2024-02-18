@@ -39,7 +39,7 @@ leonardo.build.vid=0x0f0d
 leonardo.build.pid=0x0092
 ```
 Location of ```board.txt``` can be various depends on your IDE version.   
-Then in the ```LeonardoTaiko.ino```, change this:
+Then in the ```LeonardoTaiko.ino```, change this:F
 ```
 //Uncomment to use Switch mode.
 /*
@@ -130,7 +130,7 @@ The dynamic threshold will be the maximun analogValue in buffer multiplied by ``
 
 ### Simultaneous Input (Big Notes)
 
-For this algorithm, you can't doesn't support simultaneous input (you need that to hit big notes on console version of Taiko no Tatsujin for a higher score). However technically you can do some key mapping trick to make one hit equal to 2 key pressed.
+This algorithm, doesn't support simultaneous input (you need that to hit big notes on console version of Taiko no Tatsujin for a higher score). However technically you can do some key mapping trick to make one hit equal to 2 key pressed.
 
 ### Others
 You can also imply some smoothing filter to preprocessing the raw analog input signal. In my case, the sensors are good enough.
