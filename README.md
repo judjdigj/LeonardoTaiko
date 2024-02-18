@@ -8,8 +8,6 @@ A basic and easy to use e-box with Arduino Leonardo/ProMicro.
 * Nintendo Switch Support
 * Easy to use.
 
-## How to use
-
 ## Hardware Parts
 *Arduino Leonardo/Pro Micro
 *Piezo sensor x4
