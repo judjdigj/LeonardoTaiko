@@ -56,6 +56,7 @@ void loop() {
 //    Serial.println(temp);
 //    Serial.println(threshold);
 //    Serial.println(key);
+
 //Uncomment to use Switch mode.
 
     SwitchControlLibrary().pressButton(keymapping_ns[key]);
@@ -71,7 +72,6 @@ void loop() {
     Keyboard.releaseAll();
 */
   }
-//
   if(threshold < min_threshold){
     threshold = min_threshold;
   }
