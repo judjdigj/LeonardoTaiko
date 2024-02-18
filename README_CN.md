@@ -5,6 +5,8 @@
 ![Yawaraka Tank](https://raw.githubusercontent.com/judjdigj/LeonardoTaiko/main/pics/result.jpg)  
 软软战车里魔王
 
+[English](https://github.com/judjdigj/LeonardoTaiko/tree/main)
+
 ## 特性
 
 * 使用Arduino IDE编写

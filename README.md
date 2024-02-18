@@ -5,6 +5,8 @@ A basic and easy to use e-box with Arduino Leonardo/ProMicro.
 ![Yawaraka Tank](https://raw.githubusercontent.com/judjdigj/LeonardoTaiko/main/pics/result.jpg)  
 Yawaraka Tank Ura
 
+[中文](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
+
 ## Feature
 
 * Written in Arduino IDE.
