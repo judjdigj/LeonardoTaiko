@@ -58,19 +58,19 @@ void loop() {
 //    Serial.println(key);
 
 //Uncomment to use Switch mode.
-
+/*
     SwitchControlLibrary().pressButton(keymapping_ns[key]);
     SwitchControlLibrary().sendReport();
     delay(outputDuration);
     SwitchControlLibrary().releaseButton(keymapping_ns[key]);
     SwitchControlLibrary().sendReport();
-
+*/
 //Uncomment to use keyboard mode.
-/*
+
     Keyboard.press(keymapping[key]);
     delay(outputDuration);
     Keyboard.releaseAll();
-*/
+
   }
   if(threshold < min_threshold){
     threshold = min_threshold;

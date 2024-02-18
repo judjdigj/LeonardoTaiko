@@ -23,6 +23,88 @@ Circuit pics from [ArduinoTaikoController](https://github.com/LuiCat/ArduinoTaik
 Note:
 Piezo sensor will generate ositive and negative voltage when working, so positive/negative to GND probably doesn't matter. However I'm not sure if negative voltage will cause any damage to ADC on Arduino Leonardo. If that concern you, you can use diodes or diode bridges to fix this issue.  
 
+## How to use
+You need to download [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) and [NintendoSwitchLibrary](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/) in your Arduino IDE's library manager first.  
+
+Then upload to the board. then it should work fine. By default it should be mapping to DFJK on keyboard.
+
+### Switch Support
+You need to change the VID and PID first.   
+In ```board.txt```( Arduino IDE 1.8.x ).
+```
+leonardo.vid.1=0x0f0d
+leonardo.pid.1=0x0092
+
+leonardo.build.vid=0x0f0d
+leonardo.build.pid=0x0092
+```
+Location of ```board.txt``` can be various depends on your IDE version.   
+Then in the ```LeonardoTaiko.ino```, change this:
+```
+//Uncomment to use Switch mode.
+/*
+    SwitchControlLibrary().pressButton(keymapping_ns[key]);
+    SwitchControlLibrary().sendReport();
+    delay(outputDuration);
+    SwitchControlLibrary().releaseButton(keymapping_ns[key]);
+    SwitchControlLibrary().sendReport();
+*/
+//Uncomment to use keyboard mode.
+
+    Keyboard.press(keymapping[key]);
+    delay(outputDuration);
+    Keyboard.releaseAll();
+```
+to this:
+```
+//Uncomment to use Switch mode.
+    SwitchControlLibrary().pressButton(keymapping_ns[key]);
+    SwitchControlLibrary().sendReport();
+    delay(outputDuration);
+    SwitchControlLibrary().releaseButton(keymapping_ns[key]);
+    SwitchControlLibrary().sendReport();
+//Uncomment to use keyboard mode.
+/*
+    Keyboard.press(keymapping[key]);
+    delay(outputDuration);
+    Keyboard.releaseAll();
+*/
+```
+### Keymapping
+
+```
+const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
+
+const int keymapping[4] = {'f','d','j','k'};
+```
+Change the value to change the keymapping.   
+
+Switch button definition list (more information at [Nintendo Switch Library](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)):
+```
+Button::Y
+Button::B
+Button::A
+Button::X
+Button::L
+Button::R
+Button::ZL
+Button::ZR
+Button::MINUS
+Button::PLUS
+Button::LCLICK
+Button::RCLICK
+Button::HOME
+Button::CAPTURE
+Hat::UP
+Hat::UP_RIGHT
+Hat::RIGHT
+Hat::DOWN_RIGHT
+Hat::DOWN
+Hat::DOWN_LEFT
+Hat::LEFT
+Hat::UP_LEFT
+Hat::NEUTRAL
+```
 ## Algorithm
 Once a analog value is higher the ```threshold```, a input will be detected. 
 
@@ -72,7 +154,7 @@ How many times will loop to read all 4 sensors' ```analogValue```. The smaller i
 Since ```cd_length``` define one loop for all 4 sensors, ```buffer_size``` should be ```4*cd_length```.
 
 ### ```k_increase```
-Every time a hit was detective, the threshold will change to the largest pin value multiplied by ```k_increase```. Which can prevent double input when the ```cd_length```/```buffer_size``` was set too low.
+Every time a hit was detected, the threshold will change to the largest pin value multiplied by ```k_increase```. Which can prevent double input when the ```cd_length```/```buffer_size``` was set too low.
 
 ### ```k_decay```
 Every loop the current threshold will multiply ```k_decay``` in order to go back to the original threshold.
