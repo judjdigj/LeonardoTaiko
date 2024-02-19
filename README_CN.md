@@ -43,34 +43,13 @@ leonardo.build.pid=0x0092
  ```board.txt``` 文件的地址，根据IDE版本的不同而不同。   
 然后在```LeonardoTaiko.ino```文件中，修改如下代码：
 ```
-//Uncomment to use Switch mode.
-/*
-    SwitchControlLibrary().pressButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-    delay(outputDuration);
-    SwitchControlLibrary().releaseButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-*/
-//Uncomment to use keyboard mode.
-
-    Keyboard.press(keymapping[key]);
-    delay(outputDuration);
-    Keyboard.releaseAll();
+//#define SWITCH
+#define KEYBOARD
 ```
 改成：
 ```
-//Uncomment to use Switch mode.
-    SwitchControlLibrary().pressButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-    delay(outputDuration);
-    SwitchControlLibrary().releaseButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-//Uncomment to use keyboard mode.
-/*
-    Keyboard.press(keymapping[key]);
-    delay(outputDuration);
-    Keyboard.releaseAll();
-*/
+#define SWITCH
+//#define KEYBOARD
 ```
 ### 按键映射
 

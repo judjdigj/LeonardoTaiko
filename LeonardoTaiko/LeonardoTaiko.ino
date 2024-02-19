@@ -2,9 +2,11 @@
 #include <KeyboardLayout.h>
 #include <NintendoSwitchControlLibrary.h>
 
+//#define SWITCH
+#define KEYBOARD
 
 const float min_threshold = 100;  // The minimum rate on triggering a input
-const int outputDuration = 25;  // How long a key should be pressed when triggering a input.
+const int outputDuration = 7;  // How long a key should be pressed when triggering a input.
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
@@ -58,19 +60,19 @@ void loop() {
 //    Serial.println(key);
 
 //Uncomment to use Switch mode.
-/*
+#ifdef SWITCH
     SwitchControlLibrary().pressButton(keymapping_ns[key]);
     SwitchControlLibrary().sendReport();
     delay(outputDuration);
     SwitchControlLibrary().releaseButton(keymapping_ns[key]);
     SwitchControlLibrary().sendReport();
-*/
+#endif
 //Uncomment to use keyboard mode.
-
+#ifdef KEYBOARD
     Keyboard.press(keymapping[key]);
     delay(outputDuration);
     Keyboard.releaseAll();
-
+#endif
   }
   if(threshold < min_threshold){
     threshold = min_threshold;

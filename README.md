@@ -43,34 +43,13 @@ leonardo.build.pid=0x0092
 Location of ```board.txt``` can be various depends on your IDE version.   
 Then in the ```LeonardoTaiko.ino```, change this:F
 ```
-//Uncomment to use Switch mode.
-/*
-    SwitchControlLibrary().pressButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-    delay(outputDuration);
-    SwitchControlLibrary().releaseButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-*/
-//Uncomment to use keyboard mode.
-
-    Keyboard.press(keymapping[key]);
-    delay(outputDuration);
-    Keyboard.releaseAll();
+//#define SWITCH
+#define KEYBOARD
 ```
 to this:
 ```
-//Uncomment to use Switch mode.
-    SwitchControlLibrary().pressButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-    delay(outputDuration);
-    SwitchControlLibrary().releaseButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-//Uncomment to use keyboard mode.
-/*
-    Keyboard.press(keymapping[key]);
-    delay(outputDuration);
-    Keyboard.releaseAll();
-*/
+#define SWITCH
+//#define KEYBOARD
 ```
 ### Keymapping
 
