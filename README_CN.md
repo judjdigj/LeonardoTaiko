@@ -1,11 +1,11 @@
 # LeonardoTaiko
 
-基础且简易的太鼓达人电控盒，使用Arduino Leonardo制作，支持Pro Micro。
-
-![Yawaraka Tank](https://raw.githubusercontent.com/judjdigj/LeonardoTaiko/main/pics/result.jpg)  
-软软战车里魔王
-
 [English](https://github.com/judjdigj/LeonardoTaiko/tree/main)
+
+简易的太鼓达人电控盒，使用Arduino Leonardo制作，支持Pro Micro。
+
+![Senpuu no Mai](https://raw.githubusercontent.com/judjdigj/LeonardoTaiko/main/pics/20240221_155149.jpg)  
+旋风之舞【天】全连
 
 ## 特性
 
@@ -51,6 +51,8 @@ leonardo.build.pid=0x0092
 #define SWITCH
 //#define KEYBOARD
 ```
+
+另外你可能需要把参数```outputDuration```的值改成20以上，具体看下文参数解释（并附带推荐值）部分。
 ### 按键映射
 
 ```
@@ -120,26 +122,28 @@ Hat::NEUTRAL
 ### 其他
 你也可以尝试将引入一些平滑算法对原始数据进行预处理。虽然我觉得传感器的原始数据已经够用了。
 
-## 参数解释:
+## 参数解释（并附带推荐值）:
 
-### ```threshold```
+### ```threshold = 100```
 
-触发阈值，设置得越低，鼓越灵敏。但是如果太低，低于传感器本身的原始噪音，那就会产生虚空输入。
+触发阈值，设置得越低，鼓越灵敏。使用5V作为参考，取值为0-1024。但是如果太低，低于传感器本身的原始噪音，那就会产生虚空输入。
 
-### ```outputDuration```
+### ```outputDuration = 8```
+**如果是Nintendo Switch，则设置为outputDuration = 25**。
+
 当一个输入被触发时，会映射到按键按压。这个参数决定这个按压时间有多长。设置得越短，连打性能越优秀。
 
-然而某些设备中（例如Nintendo Switch），过低的按压时间（20ms以下）会无法被设备识别。
+然而某些设备中（例如Nintendo Switch），过低的按压时间（20ms以下）会无法被设备识别。因此这里设置成25。
 
-### ```cd_length```
+### ```cd_length = 20```
 缓存区循环读取```analogValue```的循环次数。设置的越低，敲击延迟越低，但是过低的缓存区可能会导致缓存区无法读取到真正的最高值。
 
  ```cd_length``` 代表着四个传感器读取一遍这一周期循环的次数，所以```buffer_size```的大小为```4*cd_length```.
 
-### ```k_increase```
+### ```k_increase = 0.7```
 当敲击产生时，缓存中的最大值会乘上```k_increase```，实现阈值提升，避免```cd_length```/```buffer_size``` 过低时产生的抖动
 
-### ```k_decay```
+### ```k_decay = 0.99```
 每一次程序循环中，当前阈值都会乘上```k_decay```，直到阈值回到初始设定的阈值。
 
 

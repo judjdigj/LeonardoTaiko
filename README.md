@@ -1,11 +1,11 @@
 # LeonardoTaiko
 
-A basic and easy to use e-box with Arduino Leonardo/ProMicro.   
+[中文文档](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
 
-![Yawaraka Tank](https://raw.githubusercontent.com/judjdigj/LeonardoTaiko/main/pics/result.jpg)  
-Yawaraka Tank Ura
+A easy to build e-box with Arduino Leonardo/ProMicro.   
 
-[中文](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
+![Senpuu no Mai](https://raw.githubusercontent.com/judjdigj/LeonardoTaiko/main/pics/20240221_155149.jpg)  
+Play demo: Senpuu no Mai [Heaven] Full Combo.
 
 ## Feature
 
@@ -30,7 +30,7 @@ You need to download [Keyboard](https://www.arduino.cc/reference/en/language/fun
 
 Then upload the code to the board. then it should work fine. By default it should be mapping to DFJK on keyboard.
 
-### Switch Support
+### Nintendo Switch Support
 You need to change the VID and PID first.   
 In ```board.txt```( Arduino IDE 1.8.x ).
 ```
@@ -51,6 +51,8 @@ to this:
 #define SWITCH
 //#define KEYBOARD
 ```
+
+Also, you probably need to change the value of ```outputDuration``` and make it larger than 25.
 ### Keymapping
 
 ```
@@ -117,28 +119,31 @@ This algorithm, doesn't support simultaneous input (you need that to hit big not
 ### Others
 You can also imply some smoothing filter to preprocessing the raw analog input signal. In my case, the sensors are good enough.
 
-## Parameters Explain:
+## Parameters (and the recommended value):
 
-### ```threshold```
+### ```threshold = 100```
 
-The value to trigger a input. The lower it was set, the more sensitive the drum will get. If it's lower than the idle noises which piezo sensor will definitely generated, random input will occur.
+The value to trigger a input. use 5V as reference, divided the signal from 0 to 1024. The lower it was set, the more sensitive the drum will get. If it's lower than the idle noises which piezo sensor will definitely generated, random input will occur.
 
-### ```outputDuration```
-When an input is triggered, a key will be pressed. This parameter decide how long a key should be pressed. During the this period, there will be no other action.  
+### ```outputDuration = 8```
+**or ```outputDuration = 25``` for Nintendo Switch**
+
+In millisecond. When an input is triggered, a key will be pressed. This parameter decide how long a key should be pressed. During the this period, there will be no other action.  
 
 The longer it was set, the less roll you can get from
 
-In some devices (e.g. Nintendo Switch). A really short button press time (below 20ms) will not be recognized.
+For PC the simulator runs at 120fps which means roughly 8 millisecs per frame. That's reason why recommended value is 8.
 
-### ```cd_length```
-How many times will loop to read all 4 sensors' ```analogValue```. The smaller it was set, the faster response you will get after one hit. and it will more likely causing mistaken input.
+**For Nintendo Switch. A really short button press time (below 20ms) will not be recognized. So the recommended value should be larger than 20. I personally use 25.**
 
-Since ```cd_length``` define one loop for all 4 sensors, ```buffer_size``` should be ```4*cd_length```.
+### ```cd_length = 20```
+How many loops to read all 4 sensors' ```analogValue```. Since ```cd_length``` define one loop for all 4 sensors, ```buffer_size``` should be ```4*cd_length```.  
+Which means you can change this value to adjust the buffer size. The smaller it was set, the faster response you will get after hit the drum. 
 
-### ```k_increase```
+### ```k_increase = 0.7```
 Every time a hit was detected, the threshold will change to the largest pin value multiplied by ```k_increase```. Which can prevent double input when the ```cd_length```/```buffer_size``` was set too low.
 
-### ```k_decay```
+### ```k_decay = 0.99```
 Every loop the current threshold will multiply ```k_decay``` in order to go back to the original threshold.
 
 
