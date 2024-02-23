@@ -7,16 +7,15 @@ const float min_threshold = 100;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
-int outputDuration;
+const int outputDuration_pc = 7; // For PC. How long a key should be pressed when triggering a input.
+const int outputDuration_ns = 25; // For NS. How long a key should be pressed when triggering a input.
 
 //{A3, A0, A1, A2}
-
 const uint16_t keymapping_ns[4] = {Button::ZR, Button::ZL, Button::LCLICK, Button::RCLICK};
-
 const int keymapping[4] = {'k','d','f','j'};
 
 int mode = 1; //0 for keyboard, 1 for switch
-
+int outputDuration;
 int key;
 const int buffer_size = cd_length*4;
 int buffer[buffer_size];
@@ -30,12 +29,12 @@ void setup() {
   int ns_status = digitalRead(1);
   if (ns_status == LOW && pc_status == HIGH){
     mode = 1;
-    outputDuration = 25; // For NS. How long a key should be pressed when triggering a input.
+    outputDuration = outputDuration_ns; 
     EEPROM.write(0, 1);
     }
   if (pc_status == LOW && ns_status == HIGH){
     mode = 0;
-    outputDuration = 7; // For PC. How long a key should be pressed when triggering a input.
+    outputDuration = outputDuration_pc; 
     EEPROM.write(0, 0);
     }
   else{
