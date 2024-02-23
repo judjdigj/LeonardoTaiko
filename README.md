@@ -41,21 +41,16 @@ leonardo.build.vid=0x0f0d
 leonardo.build.pid=0x0092
 ```
 Location of ```board.txt``` can be various depends on your IDE version.   
-Then in the ```LeonardoTaiko.ino```, change this:F
-```
-//#define SWITCH
-#define KEYBOARD
-```
-to this:
-```
-#define SWITCH
-//#define KEYBOARD
-```
 
-Also, you probably need to change the value of ```outputDuration``` and make it larger than 25.
+Then connect Pin1 to GND, hit reset button. (Or plug into the Switch while connecting) It should work fine now.
+
+To switch back to PC mode, connect Pin0 to GND and hit reset button. (or plug into the PC while connecting).
+
 ### Keymapping
 
 ```
+//{A3, A0, A1, A2}
+
 const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
 
 const int keymapping[4] = {'f','d','j','k'};

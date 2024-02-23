@@ -41,21 +41,16 @@ leonardo.build.vid=0x0f0d
 leonardo.build.pid=0x0092
 ```
  ```board.txt``` 文件的地址，根据IDE版本的不同而不同。   
-然后在```LeonardoTaiko.ino```文件中，修改如下代码：
-```
-//#define SWITCH
-#define KEYBOARD
-```
-改成：
-```
-#define SWITCH
-//#define KEYBOARD
-```
 
-另外你可能需要把参数```outputDuration```的值改成20以上，具体看下文参数解释（并附带推荐值）部分。
+然后把Pin0和GND短接，按下Reset按键（或者Pin0和GND短接并把板子插入Switch），然后应该就可以正常使用了。
+
+切换回PC模式的话，把Pin1和GND短接，按下Reset按键（或者Pin1和GND短接并把板子插入PC）。
+
 ### 按键映射
 
 ```
+//{A3, A0, A1, A2}
+
 const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
 
 const int keymapping[4] = {'f','d','j','k'};

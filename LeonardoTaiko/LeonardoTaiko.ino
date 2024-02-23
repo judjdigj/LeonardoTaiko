@@ -1,19 +1,21 @@
 #include <Keyboard.h>
 #include <KeyboardLayout.h>
 #include <NintendoSwitchControlLibrary.h>
-
-//#define SWITCH
-#define KEYBOARD
+#include <EEPROM.h>
 
 const float min_threshold = 100;  // The minimum rate on triggering a input
-const int outputDuration = 7;  // How long a key should be pressed when triggering a input.
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
+int outputDuration;
 
-const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
+//{A3, A0, A1, A2}
 
-const int keymapping[4] = {'f','d','j','k'};
+const uint16_t keymapping_ns[4] = {Button::ZR, Button::ZL, Button::LCLICK, Button::RCLICK};
+
+const int keymapping[4] = {'k','d','f','j'};
+
+int mode = 1; //0 for keyboard, 1 for switch
 
 int key;
 const int buffer_size = cd_length*4;
@@ -21,9 +23,31 @@ int buffer[buffer_size];
 int threshold = min_threshold;
 
 void setup() {
-  pushButton(Button::A, 500, 3); //initialize on switch
-  Serial.begin(9600);
-  Keyboard.begin();
+  EEPROM.write(0, 1);
+  pinMode(0, INPUT_PULLUP);
+  pinMode(1, INPUT_PULLUP);
+  int pc_status = digitalRead(0);
+  int ns_status = digitalRead(1);
+  if (ns_status == LOW && pc_status == HIGH){
+    mode = 1;
+    outputDuration = 25; // For NS. How long a key should be pressed when triggering a input.
+    EEPROM.write(0, 1);
+    }
+  if (pc_status == LOW && ns_status == HIGH){
+    mode = 0;
+    outputDuration = 7; // For PC. How long a key should be pressed when triggering a input.
+    EEPROM.write(0, 0);
+    }
+  else{
+    mode = EEPROM.read(0);
+    }
+//  Serial.begin(9600);
+  if(mode == 1){  
+    pushButton(Button::A, 500, 3); //initialize on switch
+    }
+  if(mode == 0){
+    Keyboard.begin();
+  }
 }
 
 void loop() {
@@ -58,21 +82,18 @@ void loop() {
 //    Serial.println(temp);
 //    Serial.println(threshold);
 //    Serial.println(key);
-
-//Uncomment to use Switch mode.
-#ifdef SWITCH
-    SwitchControlLibrary().pressButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-    delay(outputDuration);
-    SwitchControlLibrary().releaseButton(keymapping_ns[key]);
-    SwitchControlLibrary().sendReport();
-#endif
-//Uncomment to use keyboard mode.
-#ifdef KEYBOARD
-    Keyboard.press(keymapping[key]);
-    delay(outputDuration);
-    Keyboard.releaseAll();
-#endif
+    if(mode == 0){
+      Keyboard.press(keymapping[key]);
+      delay(outputDuration);
+      Keyboard.releaseAll();
+    }
+    else if(mode == 1){
+      SwitchControlLibrary().pressButton(keymapping_ns[key]);
+      SwitchControlLibrary().sendReport();
+      delay(outputDuration);
+      SwitchControlLibrary().releaseButton(keymapping_ns[key]);
+      SwitchControlLibrary().sendReport();
+    }
   }
   if(threshold < min_threshold){
     threshold = min_threshold;
