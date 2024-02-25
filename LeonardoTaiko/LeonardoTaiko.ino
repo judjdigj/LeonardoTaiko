@@ -3,7 +3,7 @@
 #include <NintendoSwitchControlLibrary.h>
 #include <EEPROM.h>
 
-const float min_threshold = 100;  // The minimum rate on triggering a input
+const float min_threshold = 70;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
@@ -14,7 +14,7 @@ const int outputDuration_ns = 25; // For NS. How long a key should be pressed wh
 const uint16_t keymapping_ns[4] = {Button::ZR, Button::ZL, Button::LCLICK, Button::RCLICK};
 const int keymapping[4] = {'k','d','f','j'};
 
-int mode = 1; //0 for keyboard, 1 for switch
+int mode; //0 for keyboard, 1 for switch
 int outputDuration;
 int key;
 const int buffer_size = cd_length*4;
@@ -22,7 +22,6 @@ int buffer[buffer_size];
 int threshold = min_threshold;
 
 void setup() {
-  EEPROM.write(0, 1);
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   int pc_status = digitalRead(0);
@@ -39,6 +38,12 @@ void setup() {
     }
   else{
     mode = EEPROM.read(0);
+    if(mode == 0){
+      outputDuration = outputDuration_pc;
+      }
+    if(mode == 1){
+      outputDuration = outputDuration_ns;
+      }
     }
 //  Serial.begin(9600);
   if(mode == 1){  
