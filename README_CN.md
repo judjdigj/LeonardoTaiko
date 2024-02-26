@@ -23,8 +23,8 @@
 ### 电路连接
 四个传感器，一脚连接到GND，另一脚分别连接到A0-A3，并且并联上电阻。
 
-注意:  
-压电传感器正常工作时，会生成正电压和负电压。所以理论上说，压电传感器的正负极应该没有什么区别。然而我也不太确定负电压会对Arduino的ADC产生什么影响。如果比较担心这个的话，可以使用二极管或者桥式整流器进行负电压阻断/反转。
+**注意**:  
+压电传感器正常工作时，会生成正电压和负电压。所以理论上说，压电传感器的正负极应该没有什么区别。一般来说负电压会对AnalogInput脚会造成损害。然而压电传感器产生的电流实在是太小太小了，因此我认为由其产生的负电压是大概率不会对AnalogInput产生负面影响的。当然，如果比较担心这个的话，可以使用二极管或者桥式整流器进行负电压阻断/反转。
 
 ## 使用教程
 使用Arduino IDE打开，先在开发板管理器中下载Arduino AVR Board，然后在Arduino IDE的库管理器中下载[Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/)和[NintendoSwitchLibrary](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)两个库。  
@@ -45,6 +45,9 @@ leonardo.build.pid=0x0092
 然后把Pin0和GND短接，按下Reset按键（或者Pin0和GND短接并把板子插入Switch），然后应该就可以正常使用了。
 
 切换回PC模式的话，把Pin1和GND短接，按下Reset按键（或者Pin1和GND短接并把板子插入PC）。
+
+### 按键扩展
+取消注释```extendKey()```，```D0```和```D1```接地会分别被映射成```Button::PLUS```，```Hat::RIGHT```，在NS2中可用于进行演奏设置。然而我不确定是否会对性能产生影响。
 
 ### 按键映射
 
@@ -83,6 +86,17 @@ Hat::LEFT
 Hat::UP_LEFT
 Hat::NEUTRAL
 ```
+
+## 调试
+取消注释 ```analogMonitor()``` 并将后面主loop的全部内容全部注释掉，即可在串口编辑器中查看当模拟值超过 ```threshold```后的表现。可用于参考设置阈值的大小。
+
+另外，有几行被注释掉的代码也可用于调试，请见代码注释
+```
+//    Serial.println("DECAY");
+//    Serial.println(threshold);  //Check decay, in order to set proper k_increase and k_decay.
+```
+
+
 ## 算法解释
 敲击后，当传感器读数超过阈值```threshold```时，便会触发一个输入。
 
@@ -119,7 +133,7 @@ Hat::NEUTRAL
 
 ## 参数解释（并附带推荐值）:
 
-### ```threshold = 70```
+### ```min_threshold = 100```
 
 触发阈值，设置得越低，鼓越灵敏。使用5V作为参考，取值为0-1024。但是如果太低，低于传感器本身的原始噪音，那就会产生虚空输入。
 
