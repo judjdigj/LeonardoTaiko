@@ -28,7 +28,7 @@
 
 ## 使用教程
 使用Arduino IDE打开，先在开发板管理器中下载Arduino AVR Board，然后在Arduino IDE的库管理器中下载[Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/)和[NintendoSwitchLibrary](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)两个库。  
-安装完成后直接编译上传到开发板，应该就能使用了。默认的键盘按键映射对应```{A0, A1, A2, A3}```分别是```{'f','d','j','k'}```，Switch按键映射为```{Button::ZR, Button::ZL, Button::LCLICK, Button::RCLICK}```，详情见下文[按键映射](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md#%E6%8C%89%E9%94%AE%E6%98%A0%E5%B0%84)部分。
+安装完成后直接编译上传到开发板，应该就能使用了。默认的键盘按键映射对应```{A3, A0, A1, A2}```分别是```{'f','d','j','k'}```，Switch按键映射为```{Button::ZR, Button::ZL, Button::LCLICK, Button::RCLICK}```，详情见下文[按键映射](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md#%E6%8C%89%E9%94%AE%E6%98%A0%E5%B0%84)部分。
 
 ### Nintendo Switch支持
 首先需要更改开发板的VID和PID。
