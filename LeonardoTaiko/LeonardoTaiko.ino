@@ -3,12 +3,12 @@
 #include <NintendoSwitchControlLibrary.h>
 #include <EEPROM.h>
 
-const float min_threshold = 100;  // The minimum rate on triggering a input
+const float min_threshold = 75;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
 const int outputDuration_pc = 7; // For PC. How long a key should be pressed when triggering a input.
-const int outputDuration_ns = 25; // For NS. How long a key should be pressed when triggering a input.
+const int outputDuration_ns = 35; // For NS. How long a key should be pressed when triggering a input.
 
 //{A3, A0, A1, A2}
 const uint16_t keymapping_ns[4] = {Button::A, Hat::UP, Hat::DOWN, Button::B};
@@ -23,6 +23,7 @@ int buffer[buffer_size];
 int threshold = min_threshold;
 
 void setup() {
+  Serial.begin(9600);
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   int pc_status = digitalRead(0);
@@ -46,7 +47,7 @@ void setup() {
       outputDuration = outputDuration_ns;
       }
     }
-//  Serial.begin(9600);
+
   if(mode == 1){  
     pushButton(Button::A, 500, 3); //initialize on switch
     }
@@ -58,7 +59,7 @@ void setup() {
 void loop() {
 
 //  analogMonitor();
-//  extendKey();
+  extendKey();
     
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
@@ -104,7 +105,7 @@ void loop() {
         SwitchControlLibrary().releaseHatButton();
         SwitchControlLibrary().sendReport();
       }
-else{
+      else{
         SwitchControlLibrary().pressButton(keymapping_ns[key]);
         SwitchControlLibrary().sendReport();
         delay(outputDuration);
