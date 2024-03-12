@@ -1,6 +1,7 @@
 #include <EEPROM.h>
 #include "pressKey.h"
 
+// #define DEBUG
 
 const float min_threshold = 75;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
@@ -62,8 +63,14 @@ void setup() {
 
   // 初始化开始连接
   if (mode == 1) {  
+    #ifdef DEBUG
+    Serial.println("start with NS mode");
+    #endif
     pushButton(Button::A, 500, 3); // 初始化时按键自动连接到SWITCH
   } else if(mode == 0) {
+    #ifdef DEBUG
+    Serial.println("start with PC mode");
+    #endif
     Keyboard.begin();              // 初始化启动按键输入
   }
 }
@@ -102,21 +109,23 @@ void loop() {
       }
     }
     threshold = temp*k_increase;
-    key = (count + 1) % 4;          // 处理后，变成  0:LK  1:LD  2:RD  3:RK
+
+    //  kfdj
+    key = count % 4;          // 处理后，变成  0:LK  1:LD  2:RD  3:RK
     bool pressed = false;
     if (mode == 0) {      // PC模式输出
       switch (key) {
-        case 0: pressed = press(PC_SIZE[key], PC_LEFT_KATSU); break;
+        case 2: pressed = press(PC_SIZE[key], PC_LEFT_KATSU); break;
         case 1: pressed = press(PC_SIZE[key], PC_LEFT_DON); break;
-        case 2: pressed = press(PC_SIZE[key], PC_RIGHT_DON); break;
-        case 3: pressed = press(PC_SIZE[key], PC_RIGHT_KATSU); break;
+        case 3: pressed = press(PC_SIZE[key], PC_RIGHT_DON); break;
+        case 0: pressed = press(PC_SIZE[key], PC_RIGHT_KATSU); break;
       }
     } else {              // NS模式输出
       switch (key) {
-        case 0: pressed = press(NS_SIZE[key], NS_LEFT_KATSU); break;
+        case 2: pressed = press(NS_SIZE[key], NS_LEFT_KATSU); break;
         case 1: pressed = press(NS_SIZE[key], NS_LEFT_DON); break;
-        case 2: pressed = press(NS_SIZE[key], NS_RIGHT_DON); break;
-        case 3: pressed = press(NS_SIZE[key], NS_RIGHT_KATSU); break;
+        case 3: pressed = press(NS_SIZE[key], NS_RIGHT_DON); break;
+        case 0: pressed = press(NS_SIZE[key], NS_RIGHT_KATSU); break;
       }
     }
     if (pressed) {
@@ -132,10 +141,10 @@ void loop() {
     // Serial.println("DECAY");
     // Serial.println(threshold); //Check decay, in order to set proper k_increase and k_decay.
   }
-  unsigned long d = begin + dloop[loopc] - millis();
-  while (d < 0) d += dloop[++loopc % dsize];
-  loopc = ++loopc % dsize;
-  if (d > 0) delay(d);
+  // unsigned long d = begin + dloop[loopc % dsize] - millis();
+  // while (d < 0) d += dloop[++loopc % dsize];
+  // loopc = ++loopc % dsize;
+  // if (d > 0) delay(d);
 }
 
 

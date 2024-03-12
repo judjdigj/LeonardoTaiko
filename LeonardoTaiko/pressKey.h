@@ -6,8 +6,8 @@
 #define NS_BTN 1
 #define NS_HAT 2
 
-#define PC_BTN_DUR 7
-#define NS_BTN_DUR 25
+#define PC_BTN_DUR 5
+#define NS_BTN_DUR 35
 #define NS_HAT_DUR 35
 
 
@@ -48,6 +48,10 @@ void release() {
       switch (select->key->mode) {          // 根据按键的模式，判断应该如何抬起按键
         case PC_BTN: {
           Keyboard.release((uint8_t) select->key->key);   // 键盘抬起按键
+          #ifdef DEBUG
+          Serial.print("release ");
+          Serial.println(select->key->key);
+          #endif
           select->key->pressed = false;                   // 重置按下状态
           *lastPtr = select->next;                        // 将指向本节点的指针指向下个节点
           Node* toDel = select;
@@ -57,6 +61,10 @@ void release() {
         }; break;
         case NS_BTN: {
           SwitchControlLibrary().releaseButton(select->key->key); // NS松开按键
+          #ifdef DEBUG
+          Serial.print("release ");
+          Serial.println(select->key->key);
+          #endif
           select->key->pressed = false;                   // 重置按下状态
           *lastPtr = select->next;                        // 将指向本节点的指针指向下个节点
           Node* toDel = select;
@@ -69,8 +77,15 @@ void release() {
           uint8_t result = hat_sub(current_hat, (uint8_t) (select->key->key));  // NS计算方向键
           if (result == Hat::NEUTRAL) {                     // 如果没有按下向任意方向
             SwitchControlLibrary().releaseHatButton();      // 松开方向键
+            #ifdef DEBUG
+            Serial.println("dpad off");
+            #endif
           } else {                                          // 否则
             SwitchControlLibrary().pressHatButton(result);  // 变成另一个方向（例如左上松掉上变成左）
+            #ifdef DEBUG
+            Serial.print("dpad ");
+            Serial.println(result);
+            #endif
           }
           select->key->pressed = false;                   // 重置按下状态
           *lastPtr = select->next;                        // 将指向本节点的指针指向下个节点
@@ -94,7 +109,15 @@ void release() {
 bool press(int size, KeyUnion* keys) {
   for (int i = 0; i < size; i++) {        // 遍历所有的key
     bool pressed = press0(keys + i);      // 直到尝试按下这个按键成功
-    if (pressed) return true;             // 为止
+    if (pressed) {
+      #ifdef DEBUG
+      Serial.print("press ");
+      Serial.print((keys + i) -> mode);
+      Serial.print(" ");
+      Serial.println((keys + i)->key);
+      #endif
+      return true;             // 为止
+    }
   }
   return false;                           // 否则按下按键失败
 }
