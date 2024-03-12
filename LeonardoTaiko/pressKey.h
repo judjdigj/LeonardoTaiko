@@ -1,7 +1,6 @@
 #include <Keyboard.h>
 #include <KeyboardLayout.h>
 #include <NintendoSwitchControlLibrary.h>
-#include <ArrayList.h>
 
 #define PC_BTN 0
 #define NS_BTN 1
