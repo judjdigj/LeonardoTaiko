@@ -28,7 +28,7 @@ int buffer[buffer_size];
 int threshold = min_threshold;
 
 // 帧对齐
-uint8_t dloop[3] = {8, 8, 9};
+uint8_t dloop[6] = {4, 4, 4, 4, 4, 5};
 uint8_t dsize = sizeof(dloop) / sizeof(uint8_t);
 uint8_t loopc = 0;
 
