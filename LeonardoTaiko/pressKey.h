@@ -10,6 +10,7 @@
 #define NS_BTN_DUR 25
 #define NS_HAT_DUR 35
 
+
 struct KeyUnion {
   uint16_t key;
   uint8_t mode;
@@ -23,6 +24,7 @@ struct Node {
   Node* next;
 };
 
+
 uint8_t current_hat = Hat::NEUTRAL;
 Node* pressed = nullptr;
 
@@ -33,81 +35,99 @@ void preppend(KeyUnion* key);                   // 追加按键到待过期列�
 uint8_t hat_add(uint8_t cur, uint8_t add);      // 方向键相加
 uint8_t hat_sub(uint8_t cur, uint8_t sub);      // 方向键相减
 
+
 void release() {
-  if (pressed == nullptr) return;
-  unsigned long current = millis();
-  Node** lastPtr = &pressed;
-  Node* select = pressed;
-  bool nsTriggered = false;
+  if (pressed == nullptr) return;     // 检测添加到pressed链表中的按键
+  unsigned long current = millis();   // 获取一次时间作为当前时间
+  Node** lastPtr = &pressed;          // 保存上个节点的指针，用于移除中间节点
+  Node* select = pressed;             // 取当前节点指针，用于遍历链表
+  bool nsTriggered = false;           // 判断是否触发了ns按键操作，最后统一执行 sendReport 方法
   while (select != nullptr) {
-    if (select->key->unlock <= current) {
-      switch (select->key->mode) {
+    bool modifyTriggered = false;     // 判断是否触发了修改，用于最后处理节点遍历
+    if (select->key->unlock <= current) {   // 判断节点已经过了锁定时间（不用判断锁定状态，因为只有锁定才会加入链表）
+      switch (select->key->mode) {          // 根据按键的模式，判断应该如何抬起按键
         case PC_BTN: {
-          Keyboard.release((uint8_t) select->key->key);
-          select->key->pressed = false;
-          *lastPtr = select->next;
+          Keyboard.release((uint8_t) select->key->key);   // 键盘抬起按键
+          select->key->pressed = false;                   // 重置按下状态
+          *lastPtr = select->next;                        // 将指向本节点的指针指向下个节点
+          Node* toDel = select;
+          select = select->next;                          // 前进到下一节点
+          modifyTriggered = true;
+          free(toDel);                                    // 释放节点内存
         }; break;
         case NS_BTN: {
-          SwitchControlLibrary().releaseButton(select->key->key);
-          select->key->pressed = false;
-          *lastPtr = select->next;
-          nsTriggered = true;
+          SwitchControlLibrary().releaseButton(select->key->key); // NS松开按键
+          select->key->pressed = false;                   // 重置按下状态
+          *lastPtr = select->next;                        // 将指向本节点的指针指向下个节点
+          Node* toDel = select;
+          select = select->next;                          // 前进到下一节点
+          modifyTriggered = true;
+          nsTriggered = true;                             // 确认触发了ns操作，统一发送report
+          free(toDel);                                    // 释放节点内存
         }; break;
         case NS_HAT: {
-          uint8_t result = hat_sub(current_hat, (uint8_t) (select->key->key));
-          if (result == Hat::NEUTRAL) {
-            SwitchControlLibrary().releaseHatButton();
-          } else {
-            SwitchControlLibrary().pressHatButton(result);
+          uint8_t result = hat_sub(current_hat, (uint8_t) (select->key->key));  // NS计算方向键
+          if (result == Hat::NEUTRAL) {                     // 如果没有按下向任意方向
+            SwitchControlLibrary().releaseHatButton();      // 松开方向键
+          } else {                                          // 否则
+            SwitchControlLibrary().pressHatButton(result);  // 变成另一个方向（例如左上松掉上变成左）
           }
-          select->key->pressed = false;
-          *lastPtr = select->next;
-          nsTriggered = true;
+          select->key->pressed = false;                   // 重置按下状态
+          *lastPtr = select->next;                        // 将指向本节点的指针指向下个节点
+          Node* toDel = select;
+          select = select->next;                          // 前进到下一节点
+          modifyTriggered = true;
+          nsTriggered = true;                             // 确认触发了ns操作，统一发送report
+          free(toDel);                                    // 释放节点内存
         }; break;
       }
     }
-    select = select->next;
-    lastPtr = &(select->next);
+    if (!modifyTriggered) {               // 如果没有发生修改
+      lastPtr = &(select->next);          // 保存上个节点的指针位置转移
+      select = select->next;              // 前进到下一节点
+    }
   }
   if (nsTriggered) SwitchControlLibrary().sendReport();
 }
 
+
 bool press(int size, KeyUnion* keys) {
-  for (int i = 0; i < size; i++) {
-    bool pressed = press0(keys + i);
-    if (pressed) return true;
+  for (int i = 0; i < size; i++) {        // 遍历所有的key
+    bool pressed = press0(keys + i);      // 直到尝试按下这个按键成功
+    if (pressed) return true;             // 为止
   }
-  return false;
+  return false;                           // 否则按下按键失败
 }
+
 
 bool press0(KeyUnion* key) {
   if (key == nullptr) return false;
-  if (key->pressed == true) return false;
+  if (key->pressed == true) return false;     // 已经按下的按键不能按下了
   switch (key->mode) {
     case PC_BTN: {
-      Keyboard.press((uint8_t) (key->key));
-      unsigned long time = millis();
-      key->unlock = time + key->delay;
-      preppend(key);
+      Keyboard.press((uint8_t) (key->key));   // 按下当前键盘按键
+      key->unlock = millis() + key->delay;    // 添加抬起时间戳
+      key->pressed = true;                    // 将当前按键的状态置为按下，避免再按到它
+      preppend(key);                          // 追加到抬起链表中
       return true;
     };
     case NS_BTN: {
-      SwitchControlLibrary().pressButton(key->key);
-      SwitchControlLibrary().sendReport();
-      unsigned long time = millis();
-      key->unlock = time + key->delay;
-      preppend(key);
+      SwitchControlLibrary().pressButton(key->key);   // 按下当前手柄按钮
+      SwitchControlLibrary().sendReport();    // 发送按下回报
+      key->unlock = millis() + key->delay;    // 添加抬起时间戳
+      key->pressed = true;                    // 将当前按键的状态置为按下，避免再按到它
+      preppend(key);                          // 追加到抬起链表中
       return true;
     };
     case NS_HAT: {
-      uint8_t result = hat_add(current_hat, (uint8_t) (key->key));
-      if (result != current_hat) {
-        current_hat = result;
-        SwitchControlLibrary().pressHatButton(result);
-        SwitchControlLibrary().sendReport();
-        unsigned long time = millis();
-        key->unlock = time + key->delay;
-        preppend(key);
+      uint8_t result = hat_add(current_hat, (uint8_t) (key->key));  // 方向键合并运算
+      if (result != current_hat) {            // 能够合并
+        current_hat = result;                 // 将当前方向键状态改为合并后的状态
+        SwitchControlLibrary().pressHatButton(result);  // 按下当前(组合?)手柄方向键
+        SwitchControlLibrary().sendReport();  // 发送按下回报
+        key->unlock = millis() + key->delay;  // 添加抬起时间戳
+        key->pressed = true;                  // 将当前按键的状态置为按下，避免再按到它
+        preppend(key);                        // 追加到抬起链表中
         return true;
       } else return false;
     };
@@ -115,9 +135,12 @@ bool press0(KeyUnion* key) {
   return false;
 }
 
+
 void preppend(KeyUnion* key) {
-  Node node = {key, pressed};
-  pressed = &node;
+  Node *node = (Node*)malloc(sizeof(Node));
+  node -> key = key;
+  node -> next = pressed;
+  pressed = node;
 }
 
 // 00000000 UP

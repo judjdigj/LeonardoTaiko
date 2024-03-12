@@ -1,10 +1,12 @@
 #include <EEPROM.h>
 #include "pressKey.h"
 
+
 const float min_threshold = 75;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
+
 
 // {LK, LD, RD, RK}
 const KeyUnion NS_LEFT_KATSU[4]  = {{Button::ZL, NS_BTN, NS_BTN_DUR, 0, false}, {Button::L, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::UP, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::LEFT, NS_HAT, NS_HAT_DUR, 0, false}};
@@ -20,6 +22,7 @@ const int PC_SIZE[4] = {sizeof(PC_LEFT_KATSU) / sizeof(KeyUnion), sizeof(PC_LEFT
 // NS扩展操作键
 const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
+
 // 模式与计算按键与缓存
 int mode; //0 for keyboard, 1 for switch
 int key;
@@ -27,10 +30,12 @@ const int buffer_size = cd_length*4;
 int buffer[buffer_size];
 int threshold = min_threshold;
 
+
 // 帧对齐
 uint8_t dloop[6] = {4, 4, 4, 4, 4, 5};
 uint8_t dsize = sizeof(dloop) / sizeof(uint8_t);
 uint8_t loopc = 0;
+
 
 void setup() {
   Serial.begin(9600);
@@ -52,12 +57,13 @@ void setup() {
   }
 
   // 初始化开始连接
-  if(mode == 1){  
+  if (mode == 1) {  
     pushButton(Button::A, 500, 3); // 初始化时按键自动连接到SWITCH
-  } else if(mode == 0){
+  } else if(mode == 0) {
     Keyboard.begin();              // 初始化启动按键输入
   }
 }
+
 
 void loop() {
   unsigned long begin = millis();
@@ -67,17 +73,17 @@ void loop() {
     
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
-  for (int i = 0; i <= 3; i++){
-    if (sensorValue[i] > threshold){
+  for (int i = 0; i <= 3; i++) {
+    if (sensorValue[i] > threshold) {
       output = true;
     }
   }
 
-  if (output){
+  if (output) {
     //Storage pin value into buffer.
     int j = 0;
-    while(j < buffer_size){
-      for (int pin = A0; pin < A4; pin++){
+    while (j < buffer_size) {
+      for (int pin = A0; pin < A4; pin++) {
         buffer[j] = analogRead(pin);
         j++;
       }
@@ -85,8 +91,8 @@ void loop() {
     //finding the largest value
     int temp = buffer[0];
     int count = 1;
-    for(int i = 0; i < buffer_size; i++){
-      if (temp < buffer[i]){
+    for (int i = 0; i < buffer_size; i++) {
+      if (temp < buffer[i]) {
         temp = buffer[i];
         count = i+1;
       }
@@ -115,13 +121,12 @@ void loop() {
       Serial.println(key);
     }
   }
-  if(threshold < min_threshold){
+  if (threshold < min_threshold) {
     threshold = min_threshold;
-  }
-  else if(threshold > min_threshold){
+  } else if(threshold > min_threshold) {
     threshold = threshold*k_decay;
-//    Serial.println("DECAY");
-//    Serial.println(threshold); //Check decay, in order to set proper k_increase and k_decay.
+    // Serial.println("DECAY");
+    // Serial.println(threshold); //Check decay, in order to set proper k_increase and k_decay.
   }
   unsigned long d = begin + dloop[loopc] - millis();
   while (d < 0) d += dloop[++loopc % dsize];
@@ -130,7 +135,7 @@ void loop() {
 }
 
 
-void analogMonitor(){
+void analogMonitor() {
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
   for (int i = 0; i <= 3; i++){
@@ -139,52 +144,42 @@ void analogMonitor(){
     }
   }
   
-  if (output){
-    int j = 0;
-    while(j<100){
-      for (int pin = A0; pin <= A3; pin++){
+  if (output) {
+    for (int j = 0; j < 100; j++) {
+      for (int pin = A0; pin <= A3; pin++) {
         Serial.print("||");
         Serial.print(analogRead(pin));
-        if(pin == A3){
+        if (pin == A3) {
           Serial.println("||");
           Serial.println(j);
           Serial.println("===========");
         }
       }
-    j++;
     }
   }
 }
 
-void extendKey(){
-  if (mode == 1){
-    if(digitalRead(0) == LOW || digitalRead(1) == LOW){
-      for(int pin = 0; pin <= 1; pin++){
-        if (digitalRead(pin) == LOW){
-          if( pin == 1 ){
+
+void extendKey() {
+  if (mode == 1) {
+    if (digitalRead(0) == LOW || digitalRead(1) == LOW) {
+      for (int pin = 0; pin <= 1; pin++) {
+        if (digitalRead(pin) == LOW) {
+          if (pin == 1) {
             SwitchControlLibrary().pressHatButton(keymapping_ns_extend[pin]);
             SwitchControlLibrary().sendReport();
             delay(300);
             SwitchControlLibrary().releaseHatButton();
             SwitchControlLibrary().sendReport();
-          }
-          else{
+          } else {
             SwitchControlLibrary().pressButton(keymapping_ns_extend[pin]);
             SwitchControlLibrary().sendReport();
             delay(300);
             SwitchControlLibrary().releaseButton(keymapping_ns_extend[pin]);
             SwitchControlLibrary().sendReport();
-            }
           }
         }
       }
+    }
   }
 }
-
-
-
-
-
-
-
-
