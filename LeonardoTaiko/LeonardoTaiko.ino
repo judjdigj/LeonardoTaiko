@@ -32,7 +32,11 @@ int threshold = min_threshold;
 
 
 // 帧对齐
-uint8_t dloop[6] = {4, 4, 4, 4, 4, 5};
+// uint8_t dloop[3] = {33, 33, 34};                                  // 30帧对齐
+// uint8_t dloop[3] = {16, 17, 17};                                  // 60帧对齐
+// uint8_t dloop[3] = {8, 8, 9};                                     // 120帧对齐
+uint8_t dloop[6] = {4, 4, 4, 4, 4, 5};                            // 240帧对齐
+// uint8_t dloop[12] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};         // 480帧对齐
 uint8_t dsize = sizeof(dloop) / sizeof(uint8_t);
 uint8_t loopc = 0;
 
