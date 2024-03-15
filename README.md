@@ -2,14 +2,14 @@
 
 [中文文档](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
 
-A easy to build e-box with Arduino Leonardo/ProMicro.   
+A easy to build e-box with Arduino Leonardo/ProMicro. Huge thanks to [lty2008one](https://github.com/lty2008one) for improving performance on Switch.
 
 ![Senpuu no Mai](https://github.com/judjdigj/LeonardoTaiko/blob/main/pics/20240221_155149.jpg?raw=true)  
 Play demo: Senpuu no Mai [Heaven] Full Combo.
 
 ## Feature
 
-* Nintendo Switch Support
+* Nintendo Switch Support (with good performace)
 * Easy to build.
 
 ## Hardware Parts
@@ -29,7 +29,7 @@ In Arduino IDE, board manager, download Arduino AVR Board.
 
 Then, you need to download [Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/) and [NintendoSwitchLibrary](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/) in your Arduino IDE's library manager.
 
-Then compile and upload the code to the board. then it should work fine. By default ```{A3, A0, A1, A2}``` are mapped to ```{'f','d','j','k'}``` on keyboard. For Switch, it would be ```{Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR}```. See more at [Keymapping]https://github.com/judjdigj/LeonardoTaiko?tab=readme-ov-file#keymapping
+Then compile and upload the code to the board. then it should work fine.
 
 ### Nintendo Switch Support
 You need to change the VID and PID first.   
@@ -53,13 +53,21 @@ Uncomment ```extendKey()``` can map ```D0``` and ```D1``` to ```Button::PLUS``` 
 ### Keymapping
 
 ```
-//{A3, A0, A1, A2}
-
-const uint16_t keymapping_ns[4] = {Button::A, Hat::UP, Hat::DOWN, Button::B};
-
-const int keymapping[4] = {'f','d','j','k'};
+const KeyUnion NS_LEFT_KATSU[4]  = {{Button::ZL, NS_BTN, NS_BTN_DUR, 0, false}, {Button::L, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::UP, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::LEFT, NS_HAT, NS_HAT_DUR, 0, false}};
+const KeyUnion NS_LEFT_DON[3]    = {{Button::LCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::RIGHT, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::DOWN, NS_HAT, NS_HAT_DUR, 0, false}};
+const KeyUnion NS_RIGHT_DON[3]   = {{Button::RCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Button::Y, NS_BTN, NS_BTN_DUR, 0, false}, {Button::B, NS_BTN, NS_BTN_DUR, 0, false}};
+const KeyUnion NS_RIGHT_KATSU[4] = {{Button::ZR, NS_BTN, NS_BTN_DUR, 0, false}, {Button::R, NS_BTN, NS_BTN_DUR, 0, false}, {Button::X, NS_BTN, NS_BTN_DUR, 0, false}, {Button::A, NS_BTN, NS_BTN_DUR, 0, false}};
+const KeyUnion PC_LEFT_KATSU[1]  = {{'d', PC_BTN, PC_BTN_DUR, 0, false}};
+const KeyUnion PC_LEFT_DON[1]    = {{'f', PC_BTN, PC_BTN_DUR, 0, false}};
+const KeyUnion PC_RIGHT_DON[1]   = {{'j', PC_BTN, PC_BTN_DUR, 0, false}};
+const KeyUnion PC_RIGHT_KATSU[1] = {{'k', PC_BTN, PC_BTN_DUR, 0, false}};
 ```
-Change the value to change the keymapping.   
+This part of the codes represent the keymapping.  
+
+Note that since Switch needs at least 20ms pressing time to recongnized button, which can slow down the performance, we use ```keyUnion``` to let the key be pressed one by one.  
+For examples, on Switch version of the game, left don was usually mapped to LCLICK, RIGHT and DOWN, so when left don was hit, the LCLICK will be pressed for 35ms.  
+During this time, if another hit on the left don was detected, the RIGHT key will be pressed for another 35ms. So as the DOWN key after another hit. It feels like it "rolls" through all the possible button mapping to left don.  
+With this extra step, you can get threotically 3 times performance than the [original code](https://github.com/judjdigj/LeonardoTaiko/tree/original) on Switch, which result in one roll for 12 hit.
 
 Switch button definition list (more information at [Nintendo Switch Library](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)):
 ```
@@ -123,26 +131,16 @@ The dynamic threshold will be the maximun analogValue in buffer multiplied by ``
 
 ### Simultaneous Input (Big Notes)
 
-This algorithm, doesn't support simultaneous input (you need that to hit big notes on console version of Taiko no Tatsujin for a higher score). However technically you can do some key mapping trick to make one hit equal to 2 key pressed.
+This algorithm technicallysupport simultaneous input (you need that to hit big notes on console version of Taiko no Tatsujin for a higher score). Technically you can't do that which this code. However with the new button pressing code, 2 input can happened at a really short time. Which is good enough for Switch to recongnized it as simultaneous input.
 
 ### Others
 You can also imply some smoothing filter to preprocessing the raw analog input signal. In my case, the sensors are good enough.
 
 ## Parameters (and the recommended value):
 
-### ```min_threshold = 100```
+### ```min_threshold = 75```
 
 The value to trigger a input. use 5V as reference, divided the signal from 0 to 1024. The lower it was set, the more sensitive the drum will get. If it's lower than the idle noises which piezo sensor will definitely generated, random input will occur.
-
-### ```outputDuration_pc = 7``` and  ```outputDuration_ns = 25``` 
-
-In millisecond. When an input is triggered, a key will be pressed. This parameter decide how long a key should be pressed. During the this period, there will be no other action.  
-
-The longer it was set, the less roll you can get from
-
-For PC the simulator runs at 120fps which means roughly 8 millisecs per frame. That's reason why recommended value is 8.
-
-**For Nintendo Switch. A really short button press time (below 20ms) will not be recognized. So the recommended value should be larger than 20. I personally use 25.**
 
 ### ```cd_length = 20```
 How many loops to read all 4 sensors' ```analogValue```. Since ```cd_length``` define one loop for all 4 sensors, ```buffer_size``` should be ```4*cd_length```.  
