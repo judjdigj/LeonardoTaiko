@@ -158,7 +158,7 @@ Every loop the current threshold will multiply ```k_decay``` in order to go back
 ## Credit
 Nintendo Switch support from
 [NintendoSwitchControlLibrary](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/) by [lefmarna](https://github.com/lefmarna).  
+[lty2008one](https://github.com/lty2008one) for improving performance on Nintendo Switch.  
 Algorithm inspired by multiple Taiko project, including:  
  [ArduinoTaikoController](https://github.com/LuiCat/ArduinoTaikoController) by [LuiCat](https://github.com/LuiCat).  
 [Taiko-Input](https://github.com/sachikoxz12/Taiko-Input) by [sachikoxz12](https://github.com/sachikoxz12).
-[lty2008one](https://github.com/lty2008one) for improving performance on Nintendo Switch.
