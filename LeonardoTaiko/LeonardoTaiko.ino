@@ -1,7 +1,7 @@
 #include <EEPROM.h>
+// #define DEBUG
 #include "pressKey.h"
 
-// #define DEBUG
 
 const float min_threshold = 75;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
@@ -37,9 +37,9 @@ int threshold = min_threshold;
 // uint8_t dloop[3] = {16, 17, 17};                                  // 60帧对齐
 // uint8_t dloop[3] = {8, 8, 9};                                     // 120帧对齐
 // uint8_t dloop[6] = {4, 4, 4, 4, 4, 5};                            // 240帧对齐
-uint8_t dloop[12] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};         // 480帧对齐
-uint8_t dsize = sizeof(dloop) / sizeof(uint8_t);
-uint8_t loopc = 0;
+// uint8_t dloop[12] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};         // 480帧对齐
+// uint8_t dsize = sizeof(dloop) / sizeof(uint8_t);
+// uint8_t loopc = 0;
 
 
 void setup() {
@@ -142,8 +142,8 @@ void loop() {
     // Serial.println(threshold); //Check decay, in order to set proper k_increase and k_decay.
   }
   // unsigned long d = begin + dloop[loopc % dsize] - millis();
-  // while (d < 0) d += dloop[++loopc % dsize];
-  // loopc = ++loopc % dsize;
+  // while (d < 0) d += dloop[(++loopc) % dsize];
+  // loopc = (++loopc) % dsize;
   // if (d > 0) delay(d);
 }
 
