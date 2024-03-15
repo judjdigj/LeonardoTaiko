@@ -2,15 +2,14 @@
 
 [English](https://github.com/judjdigj/LeonardoTaiko/tree/main)
 
-简易的太鼓达人电控盒，使用Arduino Leonardo制作，支持Pro Micro。
+简易的太鼓达人电控盒，使用Arduino Leonardo制作，支持Pro Micro。 感谢[lty2008one](https://github.com/lty2008one)的代码，让Switch模式下的性能表现有了巨大提升。
 
 ![Senpuu no Mai](https://github.com/judjdigj/LeonardoTaiko/blob/main/pics/20240221_155149.jpg?raw=true)  
 旋风之舞【天】全连
 
 ## 特性
 
-* 使用Arduino IDE编写
-* 支持Nintendo Switch
+* 支持Nintendo Switch （而且性能不错）
 * 制作简单
 
 ## 硬件部分
@@ -28,11 +27,11 @@
 
 ## 使用教程
 使用Arduino IDE打开，先在开发板管理器中下载Arduino AVR Board，然后在Arduino IDE的库管理器中下载[Keyboard](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/)和[NintendoSwitchLibrary](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)两个库。  
-安装完成后直接编译上传到开发板，应该就能使用了。默认的键盘按键映射对应```{A3, A0, A1, A2}```分别是```{'f','d','j','k'}```，Switch按键映射为```{Button::ZR, Button::ZL, Button::LCLICK, Button::RCLICK}```，详情见下文[按键映射](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md#%E6%8C%89%E9%94%AE%E6%98%A0%E5%B0%84)部分。
+安装完成后直接编译上传到开发板，应该就能使用了。
 
 ### Nintendo Switch支持
 首先需要更改开发板的VID和PID。
-在 ```board.txt```( Arduino IDE 1.8.x )文件中，相关部分修改为：
+在 ```board.txt```文件中，相关部分修改为：
 ```
 leonardo.vid.1=0x0f0d
 leonardo.pid.1=0x0092
@@ -40,7 +39,8 @@ leonardo.pid.1=0x0092
 leonardo.build.vid=0x0f0d
 leonardo.build.pid=0x0092
 ```
- ```board.txt``` 文件的地址，根据IDE版本的不同而不同。Arduino IDE 1.8.19中，位置在```C:\Users\USERNAME\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6```
+无论是IDE是1.8还是2，通过Board Manager下载AVR Boards后，```board.txt``` 的位置都在```C:\Users\USERNAME\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6```  
+对于Linux用户，位置在```~/Arduino15/packages/arduino/hardware/avr/1.8.6```
 
 然后把Pin0和GND短接，按下Reset按键（或者Pin0和GND短接并把板子插入Switch），然后应该就可以正常使用了。
 
@@ -50,15 +50,20 @@ leonardo.build.pid=0x0092
 取消注释```extendKey()```，```D0```和```D1```接地会分别被映射成```Button::PLUS```，```Hat::RIGHT```，在NS2中可用于进行演奏设置。然而我不确定是否会对性能产生影响。
 
 ### 按键映射
-
 ```
-//{A3, A0, A1, A2}
-
-const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
-
-const int keymapping[4] = {'f','d','j','k'};
+const KeyUnion NS_LEFT_KATSU[4]  = {{Button::ZL, NS_BTN, NS_BTN_DUR, 0, false}, {Button::L, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::UP, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::LEFT, NS_HAT, NS_HAT_DUR, 0, false}};
+const KeyUnion NS_LEFT_DON[3]    = {{Button::LCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::RIGHT, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::DOWN, NS_HAT, NS_HAT_DUR, 0, false}};
+const KeyUnion NS_RIGHT_DON[3]   = {{Button::RCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Button::Y, NS_BTN, NS_BTN_DUR, 0, false}, {Button::B, NS_BTN, NS_BTN_DUR, 0, false}};
+const KeyUnion NS_RIGHT_KATSU[4] = {{Button::ZR, NS_BTN, NS_BTN_DUR, 0, false}, {Button::R, NS_BTN, NS_BTN_DUR, 0, false}, {Button::X, NS_BTN, NS_BTN_DUR, 0, false}, {Button::A, NS_BTN, NS_BTN_DUR, 0, false}};
+const KeyUnion PC_LEFT_KATSU[1]  = {{'d', PC_BTN, PC_BTN_DUR, 0, false}};
+const KeyUnion PC_LEFT_DON[1]    = {{'f', PC_BTN, PC_BTN_DUR, 0, false}};
+const KeyUnion PC_RIGHT_DON[1]   = {{'j', PC_BTN, PC_BTN_DUR, 0, false}};
+const KeyUnion PC_RIGHT_KATSU[1] = {{'k', PC_BTN, PC_BTN_DUR, 0, false}};
 ```
-更改这两个数组里的值来实现按键映射。  
+这部分代码为按键映射相关代码。  
+**值得注意的是**，为了使Switch识别按压按键，一个按键的按压时长需要至少20ms，这会极大降低性能表现。为了突破各个瓶颈，我们使用```keyUnion```，让对应按键一个接一个被按下。
+举个例子，当我们敲击左咚时，```LCLICK```会被按下，并持续```NS_BTN_DUR```时间（此处为35ms，可在```pressKey.h```中修改），在此期间内如果左咚再次被敲击，则```RIGHT```会被按下，同样的，如果期间再次被敲击，则按下```DOWN```，相当于有一个无形的手“搓”过这三个按键。
+这种做法带来的是和[原本代码](https://github.com/judjdigj/LeonardoTaiko/tree/original)相比至少理论上3-4倍的性能提升，本人测试中，单手一震可达到12打。
 
 这里附上Switch的按键定义(具体可参考[Nintendo Switch Library](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)):
 ```
@@ -126,22 +131,16 @@ Hat::NEUTRAL
 
 ### 同时输入 (大打音符)
 
-本算法并不支持真正意义上的同时输入。然而通过修改按键映射部分的代码，可以实现敲击一次，同时输入两个按键，从而实现大打效果，比较邪道。
+本算法并支持大打。理论上讲，本算法并不支持同时输入，但是优化后的按键按压算法，让两个按键的输入可以发生在极短的时间内，对于NS平台来说，足够让其认为是同时输入，从而处理大打音符。
 
 ### 其他
 你也可以尝试将引入一些平滑算法对原始数据进行预处理。虽然我觉得传感器的原始数据已经够用了。
 
 ## 参数解释（并附带推荐值）:
 
-### ```min_threshold = 100```
+### ```min_threshold = 75```
 
 触发阈值，设置得越低，鼓越灵敏。使用5V作为参考，取值为0-1024。但是如果太低，低于传感器本身的原始噪音，那就会产生虚空输入。
-
-### ```outputDuration_pc = 7``` 和 ```outputDuration_ns = 25```
-
-当一个输入被触发时，会映射到按键按压。这个参数决定这个按压时间有多长。设置得越短，连打性能越优秀。
-
-**然而某些设备中（例如Nintendo Switch），过低的按压时间（20ms以下）会无法被设备识别。因此这里设置成25。**
 
 ### ```cd_length = 20```
 缓存区循环读取```analogValue```的循环次数。设置的越低，敲击延迟越低，但是过低的缓存区可能会导致缓存区无法读取到真正的最高值。
@@ -158,6 +157,7 @@ Hat::NEUTRAL
 ## 鸣谢
 Nintendo Switch支持：
 [NintendoSwitchControlLibrary](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/) by [lefmarna](https://github.com/lefmarna).  
+[lty2008one](https://github.com/lty2008one)带来的NS性能提升
 算法由多个项目启发，包括：  
  [ArduinoTaikoController](https://github.com/LuiCat/ArduinoTaikoController) by [LuiCat](https://github.com/LuiCat).  
 [Taiko-Input](https://github.com/sachikoxz12/Taiko-Input) by [sachikoxz12](https://github.com/sachikoxz12).
