@@ -161,3 +161,4 @@ Nintendo Switch support from
 Algorithm inspired by multiple Taiko project, including:  
  [ArduinoTaikoController](https://github.com/LuiCat/ArduinoTaikoController) by [LuiCat](https://github.com/LuiCat).  
 [Taiko-Input](https://github.com/sachikoxz12/Taiko-Input) by [sachikoxz12](https://github.com/sachikoxz12).
+[lty2008one](https://github.com/lty2008one) for improving performance on Nintendo Switch.
