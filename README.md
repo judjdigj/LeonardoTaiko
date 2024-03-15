@@ -131,7 +131,7 @@ The dynamic threshold will be the maximun analogValue in buffer multiplied by ``
 
 ### Simultaneous Input (Big Notes)
 
-This algorithm technicallysupport simultaneous input (you need that to hit big notes on console version of Taiko no Tatsujin for a higher score). Technically you can't do that which this code. However with the new button pressing code, 2 input can happened at a really short time. Which is good enough for Switch to recongnized it as simultaneous input.
+This algorithm support simultaneous input (you need that to hit big notes on console version of Taiko no Tatsujin for a higher score). Technically you can't do that with this code. However with the new button pressing code, 2 input can happened at a really short time. Which is good enough for Switch to recongnized it as simultaneous input.
 
 ### Others
 You can also imply some smoothing filter to preprocessing the raw analog input signal. In my case, the sensors are good enough.
