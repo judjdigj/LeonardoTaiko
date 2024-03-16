@@ -35,7 +35,7 @@ Then compile and upload the code to the board. then it should work fine.
 You need to change the VID and PID first.   
 In ```board.txt```( Arduino IDE 1.8.x ).
 ```
-leonardo.vid.1=0x0f0d
+leonardo.vid.1=0x0F0D
 leonardo.pid.1=0x0092
 
 leonardo.build.vid=0x0f0d
