@@ -38,7 +38,7 @@ In ```board.txt```( Arduino IDE 1.8.x ).
 leonardo.vid.1=0x0F0D
 leonardo.pid.1=0x0092
 
-leonardo.build.vid=0x0f0d
+leonardo.build.vid=0x0F0D
 leonardo.build.pid=0x0092
 ```
 Location of ```board.txt``` can be various depends on your IDE version. For current Arduino IDE, both 1.8(legacy) and 2, it should be in ```C:\Users\USERNAME\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6```
