@@ -1,3 +1,5 @@
+# This version is out-dated.  
+Huge thanks to [lty2008one](https://github.com/lty2008one)'s work, a new code which is basically re-written on the key pressing part brought significant improvement on Switch performance. The improved code is on the main branch, and the original code will be stay in this batch for anyone who's interested.
 # LeonardoTaiko
 
 [中文文档](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
