@@ -33,10 +33,10 @@
 首先需要更改开发板的VID和PID。
 在 ```board.txt```文件中，相关部分修改为：
 ```
-leonardo.vid.1=0x0f0d
+leonardo.vid.1=0x0F0D
 leonardo.pid.1=0x0092
 
-leonardo.build.vid=0x0f0d
+leonardo.build.vid=0x0F0D
 leonardo.build.pid=0x0092
 ```
 无论是IDE是1.8还是2，通过Board Manager下载AVR Boards后，```board.txt``` 的位置都在```C:\Users\USERNAME\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6```  
