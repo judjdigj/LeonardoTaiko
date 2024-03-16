@@ -50,7 +50,7 @@ Then connect Pin1 to GND, hit reset button. (Or plug into the Switch while conne
 To switch back to PC mode, connect Pin0 to GND and hit reset button. (or plug into the PC while connecting).
 
 ### Extend Key
-Uncomment ```extendKey()``` can map ```D0``` and ```D1``` to ```Button::PLUS``` and ```Hat::RIGHT```. In case you want configuration in NS2. However I'm sure sure if there will be any negative effect on the perfermance.
+Uncomment ```extendKey()``` can map ```D0``` and ```D1``` to ```Button::PLUS``` and ```Hat::RIGHT```. In case you want configuration in NS2. However I'm not sure if there will be any negative effect on the perfermance.
 
 ### Keymapping
 
