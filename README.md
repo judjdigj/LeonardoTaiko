@@ -1,5 +1,7 @@
 # LeonardoTaiko
 
+This version is basically a re-write of the original code. Algorithm should be the same but with async programming. aiming to boist performance on Switch and possibly PC. However it's still quite unstablefor current circuit. You can still use original code [here](https://github.com/judjdigj/LeonardoTaiko)
+
 [中文文档](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
 
 A easy to build e-box with Arduino Leonardo/ProMicro. Huge thanks to [lty2008one](https://github.com/lty2008one) for improving performance on Switch.
