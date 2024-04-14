@@ -1,11 +1,12 @@
+#include <NintendoSwitchControlLibrary.h>
+#include <Keyboard.h>
 #include <EEPROM.h>
-// #define DEBUG
 
 
 const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
-const float k_increase = 0.7;  //Dynamite threshold range.
+const float k_increase = 0.8;  //Dynamite threshold range.
 const int outputDuration_pc = 7; // For PC. How long a key should be pressed when triggering a input.
 const int outputDuration_ns = 22; // For NS. How long a key should be pressed when triggering a input.
 
@@ -103,13 +104,13 @@ void loop() {
 //    Serial.println(key);
     if(mode == 0){
       Keyboard.press(keymapping[key]);
-      delay(outputDuration);
+      delay(outputDuration_pc);
       Keyboard.releaseAll();
     }
     else if(mode == 1){
       SwitchControlLibrary().pressButton(keymapping_ns[key]);
       SwitchControlLibrary().sendReport();
-      delay(outputDuration);
+      delay(outputDuration_ns);
       SwitchControlLibrary().releaseButton(keymapping_ns[key]);
       SwitchControlLibrary().sendReport();
     }
