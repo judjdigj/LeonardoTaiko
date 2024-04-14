@@ -1,26 +1,17 @@
 #include <EEPROM.h>
 // #define DEBUG
-#include "pressKey.h"
 
 
-const float min_threshold = 75;  // The minimum rate on triggering a input
+const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.7;  //Dynamite threshold range.
+const int outputDuration_pc = 7; // For PC. How long a key should be pressed when triggering a input.
+const int outputDuration_ns = 22; // For NS. How long a key should be pressed when triggering a input.
 
-
-// {LK, LD, RD, RK}
-const KeyUnion NS_LEFT_KATSU[4]  = {{Button::ZL, NS_BTN, NS_BTN_DUR, 0, false}, {Button::L, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::UP, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::LEFT, NS_HAT, NS_HAT_DUR, 0, false}};
-const KeyUnion NS_LEFT_DON[3]    = {{Button::LCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::RIGHT, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::DOWN, NS_HAT, NS_HAT_DUR, 0, false}};
-const KeyUnion NS_RIGHT_DON[3]   = {{Button::RCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Button::Y, NS_BTN, NS_BTN_DUR, 0, false}, {Button::B, NS_BTN, NS_BTN_DUR, 0, false}};
-const KeyUnion NS_RIGHT_KATSU[4] = {{Button::ZR, NS_BTN, NS_BTN_DUR, 0, false}, {Button::R, NS_BTN, NS_BTN_DUR, 0, false}, {Button::X, NS_BTN, NS_BTN_DUR, 0, false}, {Button::A, NS_BTN, NS_BTN_DUR, 0, false}};
-const KeyUnion PC_LEFT_KATSU[1]  = {{'d', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_LEFT_DON[1]    = {{'f', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_RIGHT_DON[1]   = {{'j', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_RIGHT_KATSU[1] = {{'k', PC_BTN, PC_BTN_DUR, 0, false}};
-const int NS_SIZE[4] = {sizeof(NS_LEFT_KATSU) / sizeof(KeyUnion), sizeof(NS_LEFT_DON) / sizeof(KeyUnion), sizeof(NS_RIGHT_DON) / sizeof(KeyUnion), sizeof(NS_RIGHT_KATSU) / sizeof(KeyUnion)};
-const int PC_SIZE[4] = {sizeof(PC_LEFT_KATSU) / sizeof(KeyUnion), sizeof(PC_LEFT_DON) / sizeof(KeyUnion), sizeof(PC_RIGHT_DON) / sizeof(KeyUnion), sizeof(PC_RIGHT_KATSU) / sizeof(KeyUnion)};
-// NS扩展操作键
+//{A3, A0, A1, A2}
+const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
+const int keymapping[4] = {'f','d','j','k'};
 const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
 
@@ -43,7 +34,7 @@ int threshold = min_threshold;
 
 
 void setup() {
-  Serial.begin(9600);
+//  Serial.begin(9600);
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   int pc_status = digitalRead(0);
@@ -80,8 +71,6 @@ void loop() {
   unsigned long begin = millis();
 //  analogMonitor();
   extendKey();
-  release();
-    
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
   for (int i = 0; i <= 3; i++) {
@@ -89,8 +78,7 @@ void loop() {
       output = true;
     }
   }
-
-  if (output) {
+  if (output){
     //Storage pin value into buffer.
     int j = 0;
     while (j < buffer_size) {
@@ -109,32 +97,25 @@ void loop() {
       }
     }
     threshold = temp*k_increase;
-
-    //  kfdj
-    key = count % 4;          // 处理后，变成  0:LK  1:LD  2:RD  3:RK
-    bool pressed = false;
-    if (mode == 0) {      // PC模式输出
-      switch (key) {
-        case 2: pressed = press(PC_SIZE[key], PC_LEFT_KATSU); break;
-        case 1: pressed = press(PC_SIZE[key], PC_LEFT_DON); break;
-        case 3: pressed = press(PC_SIZE[key], PC_RIGHT_DON); break;
-        case 0: pressed = press(PC_SIZE[key], PC_RIGHT_KATSU); break;
-      }
-    } else {              // NS模式输出
-      switch (key) {
-        case 2: pressed = press(NS_SIZE[key], NS_LEFT_KATSU); break;
-        case 1: pressed = press(NS_SIZE[key], NS_LEFT_DON); break;
-        case 3: pressed = press(NS_SIZE[key], NS_RIGHT_DON); break;
-        case 0: pressed = press(NS_SIZE[key], NS_RIGHT_KATSU); break;
-      }
+    key = count%4;
+//    Serial.println(temp);
+//    Serial.println(threshold);
+//    Serial.println(key);
+    if(mode == 0){
+      Keyboard.press(keymapping[key]);
+      delay(outputDuration);
+      Keyboard.releaseAll();
     }
-    if (pressed) {
-      Serial.println(temp);
-      Serial.println(threshold);
-      Serial.println(key);
+    else if(mode == 1){
+      SwitchControlLibrary().pressButton(keymapping_ns[key]);
+      SwitchControlLibrary().sendReport();
+      delay(outputDuration);
+      SwitchControlLibrary().releaseButton(keymapping_ns[key]);
+      SwitchControlLibrary().sendReport();
     }
   }
-  if (threshold < min_threshold) {
+  
+  if(threshold < min_threshold){
     threshold = min_threshold;
   } else if(threshold > min_threshold) {
     threshold = threshold*k_decay;
@@ -147,8 +128,8 @@ void loop() {
   // if (d > 0) delay(d);
 }
 
-
-void analogMonitor() {
+/*
+void analogMonitor(){
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
   for (int i = 0; i <= 3; i++){
@@ -171,14 +152,13 @@ void analogMonitor() {
     }
   }
 }
-
-
-void extendKey() {
-  if (mode == 1) {
-    if (digitalRead(0) == LOW || digitalRead(1) == LOW) {
-      for (int pin = 0; pin <= 1; pin++) {
-        if (digitalRead(pin) == LOW) {
-          if (pin == 1) {
+*/
+void extendKey(){
+  if (mode == 1){
+    if(digitalRead(0) == LOW || digitalRead(1) == LOW){
+      for(int pin = 0; pin <= 1; pin++){
+        if (digitalRead(pin) == LOW){
+          if( pin == 1 ){
             SwitchControlLibrary().pressHatButton(keymapping_ns_extend[pin]);
             SwitchControlLibrary().sendReport();
             delay(300);
