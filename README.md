@@ -1,3 +1,5 @@
+# New version is in development.  
+Huge thanks to [lty2008one](https://github.com/lty2008one)'s work, a new code which is basically re-written on the key pressing part brought significant improvement on Switch performance. However it still needs some tweaks for stable usage. The improved code is on the **develop** branch.
 # LeonardoTaiko
 
 This version is basically a re-write of the original code. Algorithm should be the same but with async programming. aiming to boist performance on Switch and possibly PC. However it's still quite unstablefor current circuit. You can still use original code [here](https://github.com/judjdigj/LeonardoTaiko)

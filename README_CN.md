@@ -1,3 +1,6 @@
+# 新版代码开发中
+感谢[lty2008one](https://github.com/lty2008one)的协助。新代码几乎重写了按键映射部分，使得Switch平台的性能获得了巨大提升。然而新代码仍然需要一些调试，以便稳定使用。如有需要，还请查看develop分支。
+
 # LeonardoTaiko
 
 [English](https://github.com/judjdigj/LeonardoTaiko/tree/main)
