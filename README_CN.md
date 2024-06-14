@@ -53,20 +53,6 @@ leonardo.build.pid=0x0092
 取消注释```extendKey()```，```D0```和```D1```接地会分别被映射成```Button::PLUS```，```Hat::RIGHT```，在NS2中可用于进行演奏设置。然而我不确定是否会对性能产生影响。
 
 ### 按键映射
-```
-const KeyUnion NS_LEFT_KATSU[4]  = {{Button::ZL, NS_BTN, NS_BTN_DUR, 0, false}, {Button::L, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::UP, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::LEFT, NS_HAT, NS_HAT_DUR, 0, false}};
-const KeyUnion NS_LEFT_DON[3]    = {{Button::LCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::RIGHT, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::DOWN, NS_HAT, NS_HAT_DUR, 0, false}};
-const KeyUnion NS_RIGHT_DON[3]   = {{Button::RCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Button::Y, NS_BTN, NS_BTN_DUR, 0, false}, {Button::B, NS_BTN, NS_BTN_DUR, 0, false}};
-const KeyUnion NS_RIGHT_KATSU[4] = {{Button::ZR, NS_BTN, NS_BTN_DUR, 0, false}, {Button::R, NS_BTN, NS_BTN_DUR, 0, false}, {Button::X, NS_BTN, NS_BTN_DUR, 0, false}, {Button::A, NS_BTN, NS_BTN_DUR, 0, false}};
-const KeyUnion PC_LEFT_KATSU[1]  = {{'d', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_LEFT_DON[1]    = {{'f', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_RIGHT_DON[1]   = {{'j', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_RIGHT_KATSU[1] = {{'k', PC_BTN, PC_BTN_DUR, 0, false}};
-```
-这部分代码为按键映射相关代码。  
-**值得注意的是**，为了使Switch识别按压按键，一个按键的按压时长需要至少20ms，这会极大降低性能表现。为了突破各个瓶颈，我们使用```keyUnion```，让对应按键一个接一个被按下。
-举个例子，当我们敲击左咚时，```LCLICK```会被按下，并持续```NS_BTN_DUR```时间（此处为35ms，可在```pressKey.h```中修改），在此期间内如果左咚再次被敲击，则```RIGHT```会被按下，同样的，如果期间再次被敲击，则按下```DOWN```，相当于有一个无形的手“搓”过这三个按键。
-这种做法带来的是和[原本代码](https://github.com/judjdigj/LeonardoTaiko/tree/original)相比至少理论上3-4倍的性能提升，本人测试中，单手一震可达到12打。
 
 这里附上Switch的按键定义(具体可参考[Nintendo Switch Library](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)):
 ```
@@ -141,16 +127,16 @@ Hat::NEUTRAL
 
 ## 参数解释（并附带推荐值）:
 
-### ```min_threshold = 75```
+### ```min_threshold =50```
 
 触发阈值，设置得越低，鼓越灵敏。使用5V作为参考，取值为0-1024。但是如果太低，低于传感器本身的原始噪音，那就会产生虚空输入。
 
-### ```cd_length = 20```
+### ```cd_length = 10```
 缓存区循环读取```analogValue```的循环次数。设置的越低，敲击延迟越低，但是过低的缓存区可能会导致缓存区无法读取到真正的最高值。
 
  ```cd_length``` 代表着四个传感器读取一遍这一周期循环的次数，所以```buffer_size```的大小为```4*cd_length```.
 
-### ```k_increase = 0.7```
+### ```k_increase = 0.8```
 当敲击产生时，缓存中的最大值会乘上```k_increase```，实现阈值提升，避免```cd_length```/```buffer_size``` 过低时产生的抖动
 
 ### ```k_decay = 0.99```
