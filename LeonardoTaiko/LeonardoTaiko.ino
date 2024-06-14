@@ -1,4 +1,7 @@
+#include <NintendoSwitchControlLibrary.h>
+#include <Keyboard.h>
 #include <EEPROM.h>
+
 // #define DEBUG
 
 
