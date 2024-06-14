@@ -103,13 +103,13 @@ void loop() {
 //    Serial.println(key);
     if(mode == 0){
       Keyboard.press(keymapping[key]);
-      delay(outputDuration);
+      delay(outputDuration_pc);
       Keyboard.releaseAll();
     }
     else if(mode == 1){
       SwitchControlLibrary().pressButton(keymapping_ns[key]);
       SwitchControlLibrary().sendReport();
-      delay(outputDuration);
+      delay(outputDuration_ns);
       SwitchControlLibrary().releaseButton(keymapping_ns[key]);
       SwitchControlLibrary().sendReport();
     }

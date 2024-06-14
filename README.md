@@ -2,8 +2,6 @@
 Huge thanks to [lty2008one](https://github.com/lty2008one)'s work, a new code which is basically re-written on the key pressing part brought significant improvement on Switch performance. However it still needs some tweaks for stable usage. The improved code is on the **develop** branch.
 # LeonardoTaiko
 
-This version is basically a re-write of the original code. Algorithm should be the same but with async programming. aiming to boist performance on Switch and possibly PC. However it's still quite unstablefor current circuit. You can still use original code [here](https://github.com/judjdigj/LeonardoTaiko)
-
 [中文文档](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
 
 A easy to build e-box with Arduino Leonardo/ProMicro. Huge thanks to [lty2008one](https://github.com/lty2008one) for improving performance on Switch.
@@ -57,23 +55,6 @@ To switch back to PC mode, connect Pin0 to GND and hit reset button. (or plug in
 Uncomment ```extendKey()``` can map ```D0``` and ```D1``` to ```Button::PLUS``` and ```Hat::RIGHT```. In case you want configuration in NS2. However I'm not sure if there will be any negative effect on the perfermance.
 
 ### Keymapping
-
-```
-const KeyUnion NS_LEFT_KATSU[4]  = {{Button::ZL, NS_BTN, NS_BTN_DUR, 0, false}, {Button::L, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::UP, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::LEFT, NS_HAT, NS_HAT_DUR, 0, false}};
-const KeyUnion NS_LEFT_DON[3]    = {{Button::LCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Hat::RIGHT, NS_HAT, NS_HAT_DUR, 0, false}, {Hat::DOWN, NS_HAT, NS_HAT_DUR, 0, false}};
-const KeyUnion NS_RIGHT_DON[3]   = {{Button::RCLICK, NS_BTN, NS_BTN_DUR, 0, false}, {Button::Y, NS_BTN, NS_BTN_DUR, 0, false}, {Button::B, NS_BTN, NS_BTN_DUR, 0, false}};
-const KeyUnion NS_RIGHT_KATSU[4] = {{Button::ZR, NS_BTN, NS_BTN_DUR, 0, false}, {Button::R, NS_BTN, NS_BTN_DUR, 0, false}, {Button::X, NS_BTN, NS_BTN_DUR, 0, false}, {Button::A, NS_BTN, NS_BTN_DUR, 0, false}};
-const KeyUnion PC_LEFT_KATSU[1]  = {{'d', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_LEFT_DON[1]    = {{'f', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_RIGHT_DON[1]   = {{'j', PC_BTN, PC_BTN_DUR, 0, false}};
-const KeyUnion PC_RIGHT_KATSU[1] = {{'k', PC_BTN, PC_BTN_DUR, 0, false}};
-```
-This part of the codes represent the keymapping.  
-
-Note that since Switch needs at least 20ms pressing time to recongnized button, which can slow down the performance, we use ```keyUnion``` to let the key be pressed one by one.  
-For examples, on Switch version of the game, left don was usually mapped to LCLICK, RIGHT and DOWN, so when left don was hit, the LCLICK will be pressed for 35ms.  
-During this time, if another hit on the left don was detected, the RIGHT key will be pressed for another 35ms. So as the DOWN key after another hit. It feels like it "rolls" through all the possible button mapping to left don.  
-With this extra step, you can get threotically 3 times performance than the [original code](https://github.com/judjdigj/LeonardoTaiko/tree/original) on Switch, which result in one roll for 12 hit.
 
 Switch button definition list (more information at [Nintendo Switch Library](https://www.arduino.cc/reference/en/libraries/nintendoswitchcontrollibrary/)):
 ```
@@ -144,15 +125,15 @@ You can also imply some smoothing filter to preprocessing the raw analog input s
 
 ## Parameters (and the recommended value):
 
-### ```min_threshold = 75```
+### ```min_threshold = 50```
 
 The value to trigger a input. use 5V as reference, divided the signal from 0 to 1024. The lower it was set, the more sensitive the drum will get. If it's lower than the idle noises which piezo sensor will definitely generated, random input will occur.
 
-### ```cd_length = 20```
+### ```cd_length = 10```
 How many loops to read all 4 sensors' ```analogValue```. Since ```cd_length``` define one loop for all 4 sensors, ```buffer_size``` should be ```4*cd_length```.  
 Which means you can change this value to adjust the buffer size. The smaller it was set, the faster response you will get after hit the drum. 
 
-### ```k_increase = 0.7```
+### ```k_increase = 0.8```
 Every time a hit was detected, the threshold will change to the largest pin value multiplied by ```k_increase```. Which can prevent double input when the ```cd_length```/```buffer_size``` was set too low.
 
 ### ```k_decay = 0.99```
