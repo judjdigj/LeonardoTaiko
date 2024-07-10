@@ -112,7 +112,7 @@ void loop() {
 
     //  kfdj
     key = count % 4;          // 处理后，变成  0:LK  1:LD  2:RD  3:RK
-    bool pressed = false;
+//    bool pressed = false;
     if (mode == 0) {      // PC模式输出
       switch (key) {
         case 2: pressed = press(PC_SIZE[key], PC_LEFT_KATSU); break;
@@ -128,11 +128,14 @@ void loop() {
         case 0: pressed = press(NS_SIZE[key], NS_RIGHT_KATSU); break;
       }
     }
+    delay(6);
+/*
     if (pressed) {
       Serial.println(temp);
       Serial.println(threshold);
       Serial.println(key);
     }
+*/
   }
   if (threshold < min_threshold) {
     threshold = min_threshold;
