@@ -3,7 +3,7 @@
 #include <EEPROM.h>
 
 
-const float min_threshold = 50;  // The minimum rate on triggering a input
+const float min_threshold = 20;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
@@ -23,6 +23,20 @@ const int buffer_size = cd_length*4;
 int buffer[buffer_size];
 int threshold = min_threshold;
 
+bool switchMode = 0;
+
+int buttonPressed = -1;
+
+int buttonStatusLK = -1;
+int buttonStatusLD = -1;
+int buttonStatusRD = -1;
+int buttonStatusRK = -1;
+
+unsigned long currentMillis = 0;
+unsigned long previousMillis1 = 0;
+unsigned long previousMillis2 = 0;
+unsigned long previousMillis3 = 0;
+unsigned long previousMillis4 = 0;
 
 // 帧对齐
 // uint8_t dloop[3] = {33, 33, 34};                                  // 30帧对齐
@@ -35,7 +49,6 @@ int threshold = min_threshold;
 
 
 void setup() {
-//  Serial.begin(9600);
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   int pc_status = digitalRead(0);
@@ -69,8 +82,29 @@ void setup() {
 
 
 void loop() {
-  unsigned long begin = millis();
-//  analogMonitor();
+  unsigned long currentMillis = millis();
+
+  if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 30){
+    SwitchControlLibrary().releaseButton(keymapping_ns[1]);
+    SwitchControlLibrary().sendReport();
+    buttonStatusLK = -1;
+  }
+  if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 30){
+    SwitchControlLibrary().releaseButton(keymapping_ns[0]);
+    SwitchControlLibrary().sendReport();
+    buttonStatusLD = -1;
+  }
+  if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 30){
+    SwitchControlLibrary().releaseButton(keymapping_ns[2]);
+    SwitchControlLibrary().sendReport();
+    buttonStatusRD = -1;
+  }
+  if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 30){
+    SwitchControlLibrary().releaseButton(keymapping_ns[3]);
+    SwitchControlLibrary().sendReport();
+    buttonStatusRK = -1;
+  }
+
   extendKey();
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
@@ -99,61 +133,48 @@ void loop() {
     }
     threshold = temp*k_increase;
     key = count%4;
-//    Serial.println(temp);
-//    Serial.println(threshold);
-//    Serial.println(key);
+    Serial.println(key);
     if(mode == 0){
       Keyboard.press(keymapping[key]);
       delay(outputDuration_pc);
       Keyboard.releaseAll();
     }
     else if(mode == 1){
-      SwitchControlLibrary().pressButton(keymapping_ns[key]);
+      switch(key){
+        case 1:
+          buttonStatusLK = 1;
+          SwitchControlLibrary().pressButton(keymapping_ns[key]);
+          previousMillis1 = currentMillis;
+          break;
+        case 0:
+          buttonStatusLD = 1;
+          SwitchControlLibrary().pressButton(keymapping_ns[key]);
+          previousMillis2 = currentMillis;
+          break;
+        case 2:
+          buttonStatusRD = 1;
+          SwitchControlLibrary().pressButton(keymapping_ns[key]);
+          previousMillis3 = currentMillis;
+          break;
+        case 3:
+          buttonStatusRK = 1;
+          SwitchControlLibrary().pressButton(keymapping_ns[key]);
+          previousMillis4 = currentMillis;
+          break;
+      }
       SwitchControlLibrary().sendReport();
-      delay(outputDuration_ns);
-      SwitchControlLibrary().releaseButton(keymapping_ns[key]);
-      SwitchControlLibrary().sendReport();
+      delay(7);
     }
   }
   
   if(threshold < min_threshold){
     threshold = min_threshold;
-  } else if(threshold > min_threshold) {
-    threshold = threshold*k_decay;
-    // Serial.println("DECAY");
-    // Serial.println(threshold); //Check decay, in order to set proper k_increase and k_decay.
   }
-  // unsigned long d = begin + dloop[loopc % dsize] - millis();
-  // while (d < 0) d += dloop[(++loopc) % dsize];
-  // loopc = (++loopc) % dsize;
-  // if (d > 0) delay(d);
+  else if(threshold > min_threshold) {
+    threshold = threshold*k_decay;
+  }
 }
 
-/*
-void analogMonitor(){
-  bool output = false;
-  int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
-  for (int i = 0; i <= 3; i++){
-    if (sensorValue[i] > threshold){
-      output = true;
-    }
-  }
-  
-  if (output) {
-    for (int j = 0; j < 100; j++) {
-      for (int pin = A0; pin <= A3; pin++) {
-        Serial.print("||");
-        Serial.print(analogRead(pin));
-        if (pin == A3) {
-          Serial.println("||");
-          Serial.println(j);
-          Serial.println("===========");
-        }
-      }
-    }
-  }
-}
-*/
 void extendKey(){
   if (mode == 1){
     if(digitalRead(0) == LOW || digitalRead(1) == LOW){
