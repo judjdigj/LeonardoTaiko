@@ -1,10 +1,13 @@
+#include <ResponsiveAnalogRead.h>
 #include <NintendoSwitchControlLibrary.h>
 #include <Keyboard.h>
 #include <EEPROM.h>
 
 
+//#define DEBUG
+
 const float min_threshold = 50;  // The minimum rate on triggering a input
-const int cd_length = 20; //Buffer loop times.
+const int cd_length = 10; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
 const int outputDuration_pc = 7; // For PC. How long a key should be pressed when triggering a input.
@@ -32,7 +35,10 @@ int threshold = min_threshold;
 // uint8_t dloop[12] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};         // 480帧对齐
 // uint8_t dsize = sizeof(dloop) / sizeof(uint8_t);
 // uint8_t loopc = 0;
-
+ResponsiveAnalogRead analog0(A0, false);
+ResponsiveAnalogRead analog1(A1, false);
+ResponsiveAnalogRead analog2(A2, false);
+ResponsiveAnalogRead analog3(A3, false);
 
 void setup() {
 //  Serial.begin(9600);
@@ -69,11 +75,19 @@ void setup() {
 
 
 void loop() {
-  unsigned long begin = millis();
-//  analogMonitor();
+
+  #ifdef DEBUG
+  analogMonitorRAW();
+  #endif
+
+  #ifndef DEBUG
   extendKey();
   bool output = false;
-  int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
+  analog0.update();
+  analog1.update();
+  analog2.update();
+  analog3.update();
+  int sensorValue[] = {analog0.getValue(),analog1.getValue(),analog2.getValue(),analog3.getValue()};
   for (int i = 0; i <= 3; i++) {
     if (sensorValue[i] > threshold) {
       output = true;
@@ -83,10 +97,18 @@ void loop() {
     //Storage pin value into buffer.
     int j = 0;
     while (j < buffer_size) {
-      for (int pin = A0; pin < A4; pin++) {
-        buffer[j] = analogRead(pin);
-        j++;
-      }
+      analog0.update();
+      buffer[j] = analog0.getValue();
+      j++;
+      analog1.update();
+      buffer[j] = analog1.getValue();
+      j++;
+      analog2.update();
+      buffer[j] = analog2.getValue();
+      j++;
+      analog3.update();
+      buffer[j] = analog3.getValue();
+      j++;
     }
     //finding the largest value
     int temp = buffer[0];
@@ -127,6 +149,7 @@ void loop() {
   // while (d < 0) d += dloop[(++loopc) % dsize];
   // loopc = (++loopc) % dsize;
   // if (d > 0) delay(d);
+  #endif
 }
 
 /*
@@ -176,4 +199,19 @@ void extendKey(){
       }
     }
   }
+}
+
+void analogMonitorRAW(){
+  analog0.update();
+  analog1.update();
+  analog2.update();
+  analog3.update();
+  Serial.print(analog0.getValue());
+  Serial.print("||");
+  Serial.print(analog3.getValue());
+  Serial.print("||");
+  Serial.print(analog1.getValue());
+  Serial.print("||");
+  Serial.print(analog2.getValue());
+  Serial.println(" ");
 }
