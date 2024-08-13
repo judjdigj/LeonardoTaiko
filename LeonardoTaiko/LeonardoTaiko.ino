@@ -2,7 +2,7 @@
 #include <Keyboard.h>
 #include <EEPROM.h>
 
-
+//#define DEBUG
 const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
@@ -70,7 +70,11 @@ void setup() {
 
 void loop() {
   unsigned long begin = millis();
-//  analogMonitor();
+#ifdef DEBUG
+  analogMonitor();
+#endif
+
+#ifndef DEBUG
   extendKey();
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
@@ -127,33 +131,14 @@ void loop() {
   // while (d < 0) d += dloop[(++loopc) % dsize];
   // loopc = (++loopc) % dsize;
   // if (d > 0) delay(d);
+  #endif
 }
 
-/*
 void analogMonitor(){
-  bool output = false;
-  int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
-  for (int i = 0; i <= 3; i++){
-    if (sensorValue[i] > threshold){
-      output = true;
-    }
-  }
-  
-  if (output) {
-    for (int j = 0; j < 100; j++) {
-      for (int pin = A0; pin <= A3; pin++) {
-        Serial.print("||");
-        Serial.print(analogRead(pin));
-        if (pin == A3) {
-          Serial.println("||");
-          Serial.println(j);
-          Serial.println("===========");
-        }
-      }
-    }
-  }
+  Serial.print(analogRead(A3));
+  Serial.println(" ");
 }
-*/
+
 void extendKey(){
   if (mode == 1){
     if(digitalRead(0) == LOW || digitalRead(1) == LOW){
