@@ -3,7 +3,7 @@
 #include <EEPROM.h>
 
 
-const float min_threshold = 20;  // The minimum rate on triggering a input
+const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
@@ -83,28 +83,46 @@ void setup() {
 
 void loop() {
   unsigned long currentMillis = millis();
-
-  if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 30){
-    SwitchControlLibrary().releaseButton(keymapping_ns[1]);
-    SwitchControlLibrary().sendReport();
-    buttonStatusLK = -1;
+  if (mode == 0){
+    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 17){
+      Keyboard.press(keymapping[key]);
+      buttonStatusLK = -1;
+    }
+    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 17){
+      Keyboard.press(keymapping[key]);
+      buttonStatusLD = -1;
+    }
+    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 17){
+      Keyboard.press(keymapping[key]);
+      buttonStatusRD = -1;
+    }
+    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 17){
+      Keyboard.press(keymapping[key]);
+      buttonStatusRK = -1;
+    }
   }
-  if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 30){
-    SwitchControlLibrary().releaseButton(keymapping_ns[0]);
-    SwitchControlLibrary().sendReport();
-    buttonStatusLD = -1;
+  else if (mode == 1){
+    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 30){
+      SwitchControlLibrary().releaseButton(keymapping_ns[1]);
+      SwitchControlLibrary().sendReport();
+      buttonStatusLK = -1;
+    }
+    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 30){
+      SwitchControlLibrary().releaseButton(keymapping_ns[0]);
+      SwitchControlLibrary().sendReport();
+      buttonStatusLD = -1;
+    }
+    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 30){
+      SwitchControlLibrary().releaseButton(keymapping_ns[2]);
+      SwitchControlLibrary().sendReport();
+      buttonStatusRD = -1;
+    }
+    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 30){
+      SwitchControlLibrary().releaseButton(keymapping_ns[3]);
+      SwitchControlLibrary().sendReport();
+      buttonStatusRK = -1;
+    }
   }
-  if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 30){
-    SwitchControlLibrary().releaseButton(keymapping_ns[2]);
-    SwitchControlLibrary().sendReport();
-    buttonStatusRD = -1;
-  }
-  if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 30){
-    SwitchControlLibrary().releaseButton(keymapping_ns[3]);
-    SwitchControlLibrary().sendReport();
-    buttonStatusRK = -1;
-  }
-
   extendKey();
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
@@ -133,11 +151,30 @@ void loop() {
     }
     threshold = temp*k_increase;
     key = count%4;
-    Serial.println(key);
     if(mode == 0){
-      Keyboard.press(keymapping[key]);
-      delay(outputDuration_pc);
-      Keyboard.releaseAll();
+      switch(key){
+        case 1:
+          buttonStatusLK = 1;
+          Keyboard.press(keymapping[key]);
+          previousMillis1 = currentMillis;
+          break;
+        case 0:
+          buttonStatusLD = 1;
+          Keyboard.press(keymapping[key]);
+          previousMillis2 = currentMillis;
+          break;
+        case 2:
+          buttonStatusRD = 1;
+          Keyboard.press(keymapping[key]);
+          previousMillis3 = currentMillis;
+          break;
+        case 3:
+          buttonStatusRK = 1;
+          Keyboard.press(keymapping[key]);
+          previousMillis4 = currentMillis;
+          break;
+      }
+      delay(7);
     }
     else if(mode == 1){
       switch(key){
