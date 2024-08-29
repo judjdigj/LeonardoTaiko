@@ -85,19 +85,19 @@ void loop() {
   unsigned long currentMillis = millis();
   if (mode == 0){
     if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 17){
-      Keyboard.press(keymapping[key]);
+      Keyboard.release(keymapping[1]);
       buttonStatusLK = -1;
     }
     if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 17){
-      Keyboard.press(keymapping[key]);
+      Keyboard.release(keymapping[0]);
       buttonStatusLD = -1;
     }
     if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 17){
-      Keyboard.press(keymapping[key]);
+      Keyboard.release(keymapping[2]);
       buttonStatusRD = -1;
     }
     if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 17){
-      Keyboard.press(keymapping[key]);
+      Keyboard.release(keymapping[3]);
       buttonStatusRK = -1;
     }
   }
