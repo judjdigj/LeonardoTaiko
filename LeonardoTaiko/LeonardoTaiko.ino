@@ -84,40 +84,40 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
   if (mode == 0){
-    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 17){
+    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 25){
       Keyboard.release(keymapping[1]);
       buttonStatusLK = -1;
     }
-    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 17){
+    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 25){
       Keyboard.release(keymapping[0]);
       buttonStatusLD = -1;
     }
-    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 17){
+    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 25){
       Keyboard.release(keymapping[2]);
       buttonStatusRD = -1;
     }
-    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 17){
+    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 25){
       Keyboard.release(keymapping[3]);
       buttonStatusRK = -1;
     }
   }
   else if (mode == 1){
-    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 30){
+    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 25){
       SwitchControlLibrary().releaseButton(keymapping_ns[1]);
       SwitchControlLibrary().sendReport();
       buttonStatusLK = -1;
     }
-    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 30){
+    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 25){
       SwitchControlLibrary().releaseButton(keymapping_ns[0]);
       SwitchControlLibrary().sendReport();
       buttonStatusLD = -1;
     }
-    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 30){
+    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 25){
       SwitchControlLibrary().releaseButton(keymapping_ns[2]);
       SwitchControlLibrary().sendReport();
       buttonStatusRD = -1;
     }
-    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 30){
+    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 25){
       SwitchControlLibrary().releaseButton(keymapping_ns[3]);
       SwitchControlLibrary().sendReport();
       buttonStatusRK = -1;
