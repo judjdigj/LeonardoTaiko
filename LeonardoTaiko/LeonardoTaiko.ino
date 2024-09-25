@@ -151,7 +151,7 @@ void loop() {
     }
     threshold = temp*k_increase;
     key = count%4;
-    if(mode == 0){
+    if(temp >= threshold && mode == 0){
       switch(key){
         case 1:
           buttonStatusLK = 1;
@@ -176,7 +176,7 @@ void loop() {
       }
       delay(7);
     }
-    else if(mode == 1){
+    else if(temp >= threshold && mode == 1){
       switch(key){
         case 1:
           buttonStatusLK = 1;
