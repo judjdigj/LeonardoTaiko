@@ -3,7 +3,7 @@
 #include <EEPROM.h>
 
 const float min_threshold = 50;  // The minimum rate on triggering a input
-const int cd_length = 10; //Buffer loop times.
+const int cd_length = 8; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
 const int outputDuration_pc = 7; // For PC. How long a key should be pressed when triggering a input.
