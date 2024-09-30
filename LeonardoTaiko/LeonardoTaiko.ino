@@ -3,7 +3,7 @@
 #include <EEPROM.h>
 
 
-const float min_threshold = 50;  // The minimum rate on triggering a input
+const float min_threshold = 30;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
@@ -151,7 +151,7 @@ void loop() {
     }
     threshold = temp*k_increase;
     key = count%4;
-    if(temp >= threshold && mode == 0){
+    if(temp >= min_threshold && mode == 0){
       switch(key){
         case 1:
           buttonStatusLK = 1;
@@ -176,7 +176,7 @@ void loop() {
       }
       delay(7);
     }
-    else if(temp >= threshold && mode == 1){
+    else if(temp >= min_threshold && mode == 1){
       switch(key){
         case 1:
           buttonStatusLK = 1;
