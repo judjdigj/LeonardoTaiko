@@ -205,24 +205,14 @@ void loop() {
 
 void extendKey(){
   if (mode == 1){
-    if(digitalRead(0) == LOW || digitalRead(1) == LOW){
-      for(int pin = 0; pin <= 1; pin++){
-        if (digitalRead(pin) == LOW){
-          if( pin == 1 ){
-            SwitchControlLibrary().pressHatButton(keymapping_ns_extend[pin]);
-            SwitchControlLibrary().sendReport();
-            delay(300);
-            SwitchControlLibrary().releaseHatButton();
-            SwitchControlLibrary().sendReport();
-          } else {
-            SwitchControlLibrary().pressButton(keymapping_ns_extend[pin]);
-            SwitchControlLibrary().sendReport();
-            delay(300);
-            SwitchControlLibrary().releaseButton(keymapping_ns_extend[pin]);
-            SwitchControlLibrary().sendReport();
-          }
-        }
-      }
+    if(digitalRead(0) == HIGH && digitalRead(1) == LOW){
+      pushHat(Hat::UP);
+    }
+    if(digitalRead(1) == HIGH && digitalRead(0) == LOW){
+      pushHat(Hat::DOWN);
+    }
+    if(digitalRead(1) == LOW && digitalRead(0) == LOW){
+      pushButton(Button::B);
     }
   }
 }
