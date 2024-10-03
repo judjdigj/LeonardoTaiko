@@ -3,12 +3,12 @@
 #include <EEPROM.h>
 
 
-const float min_threshold = 30;  // The minimum rate on triggering a input
-const int cd_length = 20; //Buffer loop times.
+const float min_threshold = 40;  // The minimum rate on triggering a input
+const int cd_length = 10; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
-const int outputDuration_pc = 7; // For PC. How long a key should be pressed when triggering a input.
-const int outputDuration_ns = 22; // For NS. How long a key should be pressed when triggering a input.
+const int outputDuration_pc = 30; // For PC. How long a key should be pressed when triggering a input.
+const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
 
 //{A3, A0, A1, A2}
 const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
@@ -84,40 +84,40 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
   if (mode == 0){
-    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 25){
+    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= outputDuration_pc){
       Keyboard.release(keymapping[1]);
       buttonStatusLK = -1;
     }
-    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 25){
+    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= outputDuration_pc){
       Keyboard.release(keymapping[0]);
       buttonStatusLD = -1;
     }
-    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 25){
+    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= outputDuration_pc){
       Keyboard.release(keymapping[2]);
       buttonStatusRD = -1;
     }
-    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 25){
+    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= outputDuration_pc){
       Keyboard.release(keymapping[3]);
       buttonStatusRK = -1;
     }
   }
   else if (mode == 1){
-    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= 25){
+    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= outputDuration_ns){
       SwitchControlLibrary().releaseButton(keymapping_ns[1]);
       SwitchControlLibrary().sendReport();
       buttonStatusLK = -1;
     }
-    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= 25){
+    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= outputDuration_ns){
       SwitchControlLibrary().releaseButton(keymapping_ns[0]);
       SwitchControlLibrary().sendReport();
       buttonStatusLD = -1;
     }
-    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= 25){
+    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= outputDuration_ns){
       SwitchControlLibrary().releaseButton(keymapping_ns[2]);
       SwitchControlLibrary().sendReport();
       buttonStatusRD = -1;
     }
-    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= 25){
+    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= outputDuration_ns){
       SwitchControlLibrary().releaseButton(keymapping_ns[3]);
       SwitchControlLibrary().sendReport();
       buttonStatusRK = -1;
