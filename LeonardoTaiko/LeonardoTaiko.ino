@@ -3,8 +3,8 @@
 #include <EEPROM.h>
 
 
-const float min_threshold = 40;  // The minimum rate on triggering a input
-const int cd_length = 10; //Buffer loop times.
+const float min_threshold = 50;  // The minimum rate on triggering a input
+const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
 const int outputDuration_pc = 30; // For PC. How long a key should be pressed when triggering a input.
@@ -12,6 +12,11 @@ const int outputDuration_ns = 30; // For NS. How long a key should be pressed wh
 
 //{A3, A0, A1, A2}
 const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
+const uint16_t keymapping_ns_2[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
+const uint16_t keymapping_ns_3[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
+
+const int keymapping[4] = {'f','d','j','k'};
+const int keymapping[4] = {'f','d','j','k'};
 const int keymapping[4] = {'f','d','j','k'};
 const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
@@ -170,25 +175,57 @@ void loop() {
     else if(temp >= min_threshold && mode == 1){
       switch(key){
         case 1:
-          buttonStatusLK = 1;
-          SwitchControlLibrary().pressButton(keymapping_ns[key]);
-          previousMillis1 = currentMillis;
-          break;
+          if(buttonStatusLK == -1){
+            buttonStatusLK = 1;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis1 = currentMillis;
+            break;
+          }
+          else if(buttonStatusLK == 1){
+            buttonStatusLK = 2;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis1 = currentMillis;
+            break;
+          }
         case 0:
-          buttonStatusLD = 1;
-          SwitchControlLibrary().pressButton(keymapping_ns[key]);
-          previousMillis2 = currentMillis;
-          break;
+          if(buttonStatusLD == -1){
+            buttonStatusLD = 1;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis2 = currentMillis;
+            break;
+          }
+          else if(buttonStatusLD == 1){
+            buttonStatusLD = 2;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis1 = currentMillis;
+            break;
+          }
         case 2:
-          buttonStatusRD = 1;
-          SwitchControlLibrary().pressButton(keymapping_ns[key]);
-          previousMillis3 = currentMillis;
-          break;
+          if(buttonStatusRD == -1){
+            buttonStatusRD = 1;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis3 = currentMillis;
+            break;
+          }
+          else if(buttonStatusRD == 1){
+            buttonStatusRD = 2;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis1 = currentMillis;
+            break;
+          }
         case 3:
-          buttonStatusRK = 1;
-          SwitchControlLibrary().pressButton(keymapping_ns[key]);
-          previousMillis4 = currentMillis;
-          break;
+          if(buttonStatusRK == -1){
+            buttonStatusRK = 1;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis4 = currentMillis;
+            break;
+          }
+          else if(buttonStatusRK == 1){
+            buttonStatusRK = 2;
+            SwitchControlLibrary().pressButton(keymapping_ns[key]);
+            previousMillis1 = currentMillis;
+            break;
+          }
       }
       SwitchControlLibrary().sendReport();
       delay(7);
