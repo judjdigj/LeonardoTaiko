@@ -11,16 +11,12 @@ const int outputDuration_pc = 30; // For PC. How long a key should be pressed wh
 const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
 
 //{A3, A0, A1, A2}
-const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
-const uint16_t keymapping_ns_2[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
-const uint16_t keymapping_ns_3[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
 
 const int keymapping[4] = {'f','d','j','k'};
-const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
 
 // 模式与计算按键与缓存
-int mode; //0 for keyboard, 1 for switch
+int mode; //0 for keyboard, 1 for ns2pc
 int key;
 const int buffer_size = cd_length*4;
 int buffer[buffer_size];
@@ -41,17 +37,6 @@ unsigned long previousMillisLK_1 = 0;
 unsigned long previousMillisLD_1 = 0;
 unsigned long previousMillisRD_1 = 0;
 unsigned long previousMillisRK_1 = 0;
-
-unsigned long previousMillisLK_2 = 0;
-unsigned long previousMillisLD_2 = 0;
-unsigned long previousMillisRD_2 = 0;
-unsigned long previousMillisRK_2 = 0;
-
-unsigned long previousMillisLK_3 = 0;
-unsigned long previousMillisLD_3 = 0;
-unsigned long previousMillisRD_3 = 0;
-unsigned long previousMillisRK_3 = 0;
-
 
 void setup() {
   pinMode(0, INPUT_PULLUP);
@@ -88,157 +73,30 @@ void setup() {
 
 void loop() {
   unsigned long currentMillis = millis();
-  //Keyboard=============================================== 
-  if (mode == 0){
-    if(buttonStatusLK != -1 && currentMillis - previousMillisLK_1 >= outputDuration_pc){
-      Keyboard.release(keymapping[1]);
-      buttonStatusLK = -1;
-    }
-    if(buttonStatusLD != -1 && currentMillis - previousMillisLD_1 >= outputDuration_pc){
-      Keyboard.release(keymapping[0]);
-      buttonStatusLD = -1;
-    }
-    if(buttonStatusRD != -1 && currentMillis - previousMillisRD_1 >= outputDuration_pc){
-      Keyboard.release(keymapping[2]);
-      buttonStatusRD = -1;
-    }
-    if(buttonStatusRK != -1 && currentMillis - previousMillisRK_1 >= outputDuration_pc){
-      Keyboard.release(keymapping[3]);
-      buttonStatusRK = -1;
-    }
-  }
-//Switch===============================================  
+//Keyboard_NS2===============================================  
   //LK===================
-  else if (mode == 1){
+  if (mode == 1){
     if(buttonStatusLK == 1 && currentMillis - previousMillisLK_1 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(Button::ZL);
-      SwitchControlLibrary().sendReport();
+      Keyboard.release('d');
       buttonStatusLK = -1;
-    }
-    else if(buttonStatusLK == 2){
-      if(currentMillis - previousMillisLK_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::ZL);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisLK_2 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::L);
-        SwitchControlLibrary().sendReport();
-        buttonStatusLK = -1;
-      }
-    }
-    else if(buttonStatusLK == 3){
-      if(currentMillis - previousMillisLK_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::ZL);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisLK_2 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::L);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisLK_3 >= outputDuration_ns){
-        SwitchControlLibrary().releaseHatButton();
-        SwitchControlLibrary().sendReport();
-        buttonStatusLK = -1;
-      }
     }
   //LD====================================================================
     if(buttonStatusLD == 1 && currentMillis - previousMillisLD_1 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(Button::LCLICK);
-      SwitchControlLibrary().sendReport();
+      Keyboard.release('f');
       buttonStatusLD = -1;
-    }
-    else if(buttonStatusLD == 2){
-      if(currentMillis - previousMillisLD_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::LCLICK);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisLD_2 >= outputDuration_ns){
-        SwitchControlLibrary().releaseHatButton();
-        SwitchControlLibrary().sendReport();
-        buttonStatusLD = -1;
-      }
-    }
-    else if(buttonStatusLD == 3){
-      if(currentMillis - previousMillisLD_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::LCLICK);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisLD_2 >= outputDuration_ns){
-        SwitchControlLibrary().pressHatButton(Hat::DOWN);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisLD_3 >= outputDuration_ns){
-        SwitchControlLibrary().releaseHatButton();
-        SwitchControlLibrary().sendReport();
-        buttonStatusLD = -1;
-      }
     }
   //RD=============================================================
     if(buttonStatusRD == 1 && currentMillis - previousMillisRD_1 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(Button::RCLICK);
-      SwitchControlLibrary().sendReport();
+      Keyboard.release('j');
       buttonStatusRD = -1;
-    }
-    else if(buttonStatusRD == 2){
-      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::RCLICK);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::Y);
-        SwitchControlLibrary().sendReport();
-        buttonStatusRD = -1;
-      }
-    }
-    else if(buttonStatusLK == 3){
-      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::RCLICK);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::Y);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisRD_3 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::B);
-        SwitchControlLibrary().sendReport();
-        buttonStatusRD = -1;
-      }
     }
 //RK======================================================
     if(buttonStatusRK == 1 && currentMillis - previousMillisRK_1 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(Button::ZR);
-      SwitchControlLibrary().sendReport();
+      Keyboard.release('k');
       buttonStatusRK = -1;
     }
-    else if(buttonStatusRK == 2){
-      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::ZR);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::R);
-        SwitchControlLibrary().sendReport();
-        buttonStatusRD = -1;
-      }
-    }
-    else if(buttonStatusLK == 3){
-      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::ZR);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::R);
-        SwitchControlLibrary().sendReport();
-      }
-      if(currentMillis - previousMillisRD_3 >= outputDuration_ns){
-        SwitchControlLibrary().releaseButton(Button::X);
-        SwitchControlLibrary().sendReport();
-        buttonStatusRD = -1;
-      }
-    }
   }
-  extendKey();
+
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
   for (int i = 0; i <= 3; i++) {
@@ -246,6 +104,7 @@ void loop() {
       output = true;
     }
   }
+  
   if (output){
     //Storage pin value into buffer.
     int j = 0;
@@ -269,109 +128,53 @@ void loop() {
     if(temp >= min_threshold && mode == 0){
       switch(key){
         case 1:
-          buttonStatusLK = 1;
           Keyboard.press(keymapping[key]);
-          previousMillisLK_1 = currentMillis;
           break;
         case 0:
-          buttonStatusLD = 1;
           Keyboard.press(keymapping[key]);
-          previousMillisLD_1 = currentMillis;
           break;
         case 2:
-          buttonStatusRD = 1;
           Keyboard.press(keymapping[key]);
-          previousMillisRD_1 = currentMillis;
           break;
         case 3:
-          buttonStatusRK = 1;
           Keyboard.press(keymapping[key]);
-          previousMillisRK_1 = currentMillis;
           break;
       }
-  //    delay(0);
+      delay(8);
+      Keyboard.releaseAll();
     }
+
     else if(temp >= min_threshold && mode == 1){
       switch(key){
         case 1:
           if(buttonStatusLK == -1){
             buttonStatusLK = 1;
-            SwitchControlLibrary().pressButton(Button::ZL);
+            Keyboard.press('d');
             previousMillisLK_1 = currentMillis;
-            break;
           }
-          else if(buttonStatusLK == 1){
-            buttonStatusLK = 2;
-            SwitchControlLibrary().pressButton(Button::L);
-            previousMillisLK_2 = currentMillis;
-            break;
-          }
-          else if(buttonStatusLK == 2){
-            buttonStatusLK = 3;
-            SwitchControlLibrary().pressHatButton(Hat::UP);
-            previousMillisLK_3 = currentMillis;
-            break;
-          }
+          break;
         case 0:
           if(buttonStatusLD == -1){
             buttonStatusLD = 1;
-            SwitchControlLibrary().pressButton(Button::LCLICK);
+            Keyboard.press('f');
             previousMillisLD_1 = currentMillis;
-            break;
           }
-          else if(buttonStatusLD == 1){
-            buttonStatusLD = 2;
-            SwitchControlLibrary().pressHatButton(Hat::RIGHT);
-            previousMillisLD_2 = currentMillis;
-            break;
-          }
-          else if(buttonStatusLD == 2){
-            buttonStatusLD = 3;
-            SwitchControlLibrary().pressHatButton(Hat::DOWN_RIGHT);
-            previousMillisLD_3 = currentMillis;
-            break;
-          }
+          break;
         case 2:
           if(buttonStatusRD == -1){
             buttonStatusRD = 1;
-            SwitchControlLibrary().pressButton(Button::RCLICK);
+            Keyboard.press('j');
             previousMillisRD_1 = currentMillis;
-            break;
           }
-          else if(buttonStatusRD == 1){
-            buttonStatusRD = 2;
-            SwitchControlLibrary().pressButton(Button::Y);
-            previousMillisRD_2 = currentMillis;
-            break;
-          }
-          else if(buttonStatusRD == 2){
-            buttonStatusRD = 3;
-            SwitchControlLibrary().pressButton(Button::B);
-            previousMillisRD_3 = currentMillis;
-            break;
-          }
+          break;
         case 3:
           if(buttonStatusRK == -1){
             buttonStatusRK = 1;
-            SwitchControlLibrary().pressButton(Button::ZR);
+            Keyboard.press('k');
             previousMillisRK_1 = currentMillis;
-            break;
           }
-          else if(buttonStatusRK == 1){
-            buttonStatusRK = 2;
-            SwitchControlLibrary().pressButton(Button::R);
-            previousMillisRK_2 = currentMillis;
-            break;
-          }
-          else if(buttonStatusRK == 2){
-            buttonStatusRK = 3;
-            SwitchControlLibrary().pressButton(Button::X);
-            previousMillisRK_3 = currentMillis;
-            break;
-          }
+          break;
       }
-      SwitchControlLibrary().sendReport();
- //     delay(10);
     }
   }
   
@@ -380,19 +183,5 @@ void loop() {
   }
   else if(threshold > min_threshold) {
     threshold = threshold*k_decay;
-  }
-}
-
-void extendKey(){
-  if (mode == 1){
-    if(digitalRead(0) == HIGH && digitalRead(1) == LOW){
-      pushHat(Hat::UP);
-    }
-    if(digitalRead(1) == HIGH && digitalRead(0) == LOW){
-      pushHat(Hat::DOWN);
-    }
-    if(digitalRead(1) == LOW && digitalRead(0) == LOW){
-      pushButton(Button::B);
-    }
   }
 }
