@@ -7,7 +7,7 @@ const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
-const int outputDuration_pc = 30; // For PC. How long a key should be pressed when triggering a input.
+const int outputDuration_pc = 6; // For PC. How long a key should be pressed when triggering a input.
 const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
 
 //{A3, A0, A1, A2}
@@ -170,7 +170,7 @@ void loop() {
           previousMillis4 = currentMillis;
           break;
       }
-      delay(7);
+  //    delay(0);
     }
     else if(temp >= min_threshold && mode == 1){
       switch(key){
