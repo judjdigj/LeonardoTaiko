@@ -7,7 +7,7 @@ const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
-const int outputDuration_pc = 6; // For PC. How long a key should be pressed when triggering a input.
+const int outputDuration_pc = 30; // For PC. How long a key should be pressed when triggering a input.
 const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
 
 //{A3, A0, A1, A2}
@@ -15,8 +15,6 @@ const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, B
 const uint16_t keymapping_ns_2[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
 const uint16_t keymapping_ns_3[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
 
-const int keymapping[4] = {'f','d','j','k'};
-const int keymapping[4] = {'f','d','j','k'};
 const int keymapping[4] = {'f','d','j','k'};
 const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
@@ -38,10 +36,21 @@ int buttonStatusRD = -1;
 int buttonStatusRK = -1;
 
 unsigned long currentMillis = 0;
-unsigned long previousMillis1 = 0;
-unsigned long previousMillis2 = 0;
-unsigned long previousMillis3 = 0;
-unsigned long previousMillis4 = 0;
+
+unsigned long previousMillisLK_1 = 0;
+unsigned long previousMillisLD_1 = 0;
+unsigned long previousMillisRD_1 = 0;
+unsigned long previousMillisRK_1 = 0;
+
+unsigned long previousMillisLK_2 = 0;
+unsigned long previousMillisLD_2 = 0;
+unsigned long previousMillisRD_2 = 0;
+unsigned long previousMillisRK_2 = 0;
+
+unsigned long previousMillisLK_3 = 0;
+unsigned long previousMillisLD_3 = 0;
+unsigned long previousMillisRD_3 = 0;
+unsigned long previousMillisRK_3 = 0;
 
 
 void setup() {
@@ -79,44 +88,154 @@ void setup() {
 
 void loop() {
   unsigned long currentMillis = millis();
+  //Keyboard=============================================== 
   if (mode == 0){
-    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= outputDuration_pc){
+    if(buttonStatusLK != -1 && currentMillis - previousMillisLK_1 >= outputDuration_pc){
       Keyboard.release(keymapping[1]);
       buttonStatusLK = -1;
     }
-    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= outputDuration_pc){
+    if(buttonStatusLD != -1 && currentMillis - previousMillisLD_1 >= outputDuration_pc){
       Keyboard.release(keymapping[0]);
       buttonStatusLD = -1;
     }
-    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= outputDuration_pc){
+    if(buttonStatusRD != -1 && currentMillis - previousMillisRD_1 >= outputDuration_pc){
       Keyboard.release(keymapping[2]);
       buttonStatusRD = -1;
     }
-    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= outputDuration_pc){
+    if(buttonStatusRK != -1 && currentMillis - previousMillisRK_1 >= outputDuration_pc){
       Keyboard.release(keymapping[3]);
       buttonStatusRK = -1;
     }
   }
+//Switch===============================================  
+  //LK===================
   else if (mode == 1){
-    if(buttonStatusLK != -1 && currentMillis - previousMillis1 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(keymapping_ns[1]);
+    if(buttonStatusLK == 1 && currentMillis - previousMillisLK_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::ZL);
       SwitchControlLibrary().sendReport();
       buttonStatusLK = -1;
     }
-    if(buttonStatusLD != -1 && currentMillis - previousMillis2 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(keymapping_ns[0]);
+    else if(buttonStatusLK == 2){
+      if(currentMillis - previousMillisLK_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::ZL);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisLK_2 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::L);
+        SwitchControlLibrary().sendReport();
+        buttonStatusLK = -1;
+      }
+    }
+    else if(buttonStatusLK == 3){
+      if(currentMillis - previousMillisLK_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::ZL);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisLK_2 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::L);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisLK_3 >= outputDuration_ns){
+        SwitchControlLibrary().releaseHatButton();
+        SwitchControlLibrary().sendReport();
+        buttonStatusLK = -1;
+      }
+    }
+  //LD====================================================================
+    if(buttonStatusLD == 1 && currentMillis - previousMillisLD_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::LCLICK);
       SwitchControlLibrary().sendReport();
       buttonStatusLD = -1;
     }
-    if(buttonStatusRD != -1 && currentMillis - previousMillis3 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(keymapping_ns[2]);
+    else if(buttonStatusLD == 2){
+      if(currentMillis - previousMillisLD_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::LCLICK);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisLD_2 >= outputDuration_ns){
+        SwitchControlLibrary().releaseHatButton();
+        SwitchControlLibrary().sendReport();
+        buttonStatusLD = -1;
+      }
+    }
+    else if(buttonStatusLD == 3){
+      if(currentMillis - previousMillisLD_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::LCLICK);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisLD_2 >= outputDuration_ns){
+        SwitchControlLibrary().pressHatButton(Hat::DOWN);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisLD_3 >= outputDuration_ns){
+        SwitchControlLibrary().releaseHatButton();
+        SwitchControlLibrary().sendReport();
+        buttonStatusLD = -1;
+      }
+    }
+  //RD=============================================================
+    if(buttonStatusRD == 1 && currentMillis - previousMillisRD_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::RCLICK);
       SwitchControlLibrary().sendReport();
       buttonStatusRD = -1;
     }
-    if(buttonStatusRK != -1 && currentMillis - previousMillis4 >= outputDuration_ns){
-      SwitchControlLibrary().releaseButton(keymapping_ns[3]);
+    else if(buttonStatusRD == 2){
+      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::RCLICK);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::Y);
+        SwitchControlLibrary().sendReport();
+        buttonStatusRD = -1;
+      }
+    }
+    else if(buttonStatusLK == 3){
+      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::RCLICK);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::Y);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisRD_3 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::B);
+        SwitchControlLibrary().sendReport();
+        buttonStatusRD = -1;
+      }
+    }
+//RK======================================================
+    if(buttonStatusRK == 1 && currentMillis - previousMillisRK_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::ZR);
       SwitchControlLibrary().sendReport();
       buttonStatusRK = -1;
+    }
+    else if(buttonStatusRK == 2){
+      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::ZR);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::R);
+        SwitchControlLibrary().sendReport();
+        buttonStatusRD = -1;
+      }
+    }
+    else if(buttonStatusLK == 3){
+      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::ZR);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::R);
+        SwitchControlLibrary().sendReport();
+      }
+      if(currentMillis - previousMillisRD_3 >= outputDuration_ns){
+        SwitchControlLibrary().releaseButton(Button::X);
+        SwitchControlLibrary().sendReport();
+        buttonStatusRD = -1;
+      }
     }
   }
   extendKey();
@@ -152,22 +271,22 @@ void loop() {
         case 1:
           buttonStatusLK = 1;
           Keyboard.press(keymapping[key]);
-          previousMillis1 = currentMillis;
+          previousMillisLK_1 = currentMillis;
           break;
         case 0:
           buttonStatusLD = 1;
           Keyboard.press(keymapping[key]);
-          previousMillis2 = currentMillis;
+          previousMillisLD_1 = currentMillis;
           break;
         case 2:
           buttonStatusRD = 1;
           Keyboard.press(keymapping[key]);
-          previousMillis3 = currentMillis;
+          previousMillisRD_1 = currentMillis;
           break;
         case 3:
           buttonStatusRK = 1;
           Keyboard.press(keymapping[key]);
-          previousMillis4 = currentMillis;
+          previousMillisRK_1 = currentMillis;
           break;
       }
   //    delay(0);
@@ -177,58 +296,82 @@ void loop() {
         case 1:
           if(buttonStatusLK == -1){
             buttonStatusLK = 1;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis1 = currentMillis;
+            SwitchControlLibrary().pressButton(Button::ZL);
+            previousMillisLK_1 = currentMillis;
             break;
           }
           else if(buttonStatusLK == 1){
             buttonStatusLK = 2;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis1 = currentMillis;
+            SwitchControlLibrary().pressButton(Button::L);
+            previousMillisLK_2 = currentMillis;
+            break;
+          }
+          else if(buttonStatusLK == 2){
+            buttonStatusLK = 3;
+            SwitchControlLibrary().pressHatButton(Hat::UP);
+            previousMillisLK_3 = currentMillis;
             break;
           }
         case 0:
           if(buttonStatusLD == -1){
             buttonStatusLD = 1;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis2 = currentMillis;
+            SwitchControlLibrary().pressButton(Button::LCLICK);
+            previousMillisLD_1 = currentMillis;
             break;
           }
           else if(buttonStatusLD == 1){
             buttonStatusLD = 2;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis1 = currentMillis;
+            SwitchControlLibrary().pressHatButton(Hat::RIGHT);
+            previousMillisLD_2 = currentMillis;
+            break;
+          }
+          else if(buttonStatusLD == 2){
+            buttonStatusLD = 3;
+            SwitchControlLibrary().pressHatButton(Hat::DOWN_RIGHT);
+            previousMillisLD_3 = currentMillis;
             break;
           }
         case 2:
           if(buttonStatusRD == -1){
             buttonStatusRD = 1;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis3 = currentMillis;
+            SwitchControlLibrary().pressButton(Button::RCLICK);
+            previousMillisRD_1 = currentMillis;
             break;
           }
           else if(buttonStatusRD == 1){
             buttonStatusRD = 2;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis1 = currentMillis;
+            SwitchControlLibrary().pressButton(Button::Y);
+            previousMillisRD_2 = currentMillis;
+            break;
+          }
+          else if(buttonStatusRD == 2){
+            buttonStatusRD = 3;
+            SwitchControlLibrary().pressButton(Button::B);
+            previousMillisRD_3 = currentMillis;
             break;
           }
         case 3:
           if(buttonStatusRK == -1){
             buttonStatusRK = 1;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis4 = currentMillis;
+            SwitchControlLibrary().pressButton(Button::ZR);
+            previousMillisRK_1 = currentMillis;
             break;
           }
           else if(buttonStatusRK == 1){
             buttonStatusRK = 2;
-            SwitchControlLibrary().pressButton(keymapping_ns[key]);
-            previousMillis1 = currentMillis;
+            SwitchControlLibrary().pressButton(Button::R);
+            previousMillisRK_2 = currentMillis;
+            break;
+          }
+          else if(buttonStatusRK == 2){
+            buttonStatusRK = 3;
+            SwitchControlLibrary().pressButton(Button::X);
+            previousMillisRK_3 = currentMillis;
             break;
           }
       }
       SwitchControlLibrary().sendReport();
-      delay(7);
+ //     delay(10);
     }
   }
   
