@@ -2,17 +2,20 @@
 #include <Keyboard.h>
 #include <EEPROM.h>
 
+//Analog Monitor feature
+//#define DEBUG
+
+
 const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
 const int outputDuration_pc = 8; // For PC. How long a key should be pressed when triggering a input.
-const int outputDuration_ns = 22; // For NS. How long a key should be pressed when triggering a input.
+const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
 
 //{A3, A0, A1, A2}
 const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
 const int keymapping[4] = {'f','d','j','k'};
-const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
 
 // 模式与计算按键与缓存
@@ -68,8 +71,13 @@ void setup() {
 
 
 void loop() {
+  
+  #ifdef DEBUG
+  analogMonitor();
+  #endif
+  
+  #ifndef DEBUG
   unsigned long begin = millis();
-
   extendKey();
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
@@ -131,24 +139,29 @@ void loop() {
 
 void extendKey(){
   if (mode == 1){
-    if(digitalRead(0) == LOW || digitalRead(1) == LOW){
-      for(int pin = 0; pin <= 1; pin++){
-        if (digitalRead(pin) == LOW){
-          if( pin == 1 ){
-            SwitchControlLibrary().pressHatButton(keymapping_ns_extend[pin]);
-            SwitchControlLibrary().sendReport();
-            delay(300);
-            SwitchControlLibrary().releaseHatButton();
-            SwitchControlLibrary().sendReport();
-          } else {
-            SwitchControlLibrary().pressButton(keymapping_ns_extend[pin]);
-            SwitchControlLibrary().sendReport();
-            delay(300);
-            SwitchControlLibrary().releaseButton(keymapping_ns_extend[pin]);
-            SwitchControlLibrary().sendReport();
-          }
-        }
-      }
+    if(digitalRead(0) == LOW && digitalRead(1) == HIGH){
+      pushHat(Hat::UP);
+    }
+
+    if(digitalRead(1) == LOW && digitalRead(0) == HIGH){
+      pushHat(Hat::DOWN);
+    }
+
+    if(digitalRead(1) == LOW && digitalRead(0) == LOW){
+      pushButton(Button::B);
     }
   }
+  #endif
+}
+
+void analogMonitor(){
+  Serial.print(analogRead("||"));
+  Serial.print(analogRead(A1));
+  Serial.print(analogRead("||"));
+  Serial.print(analogRead(A0));
+  Serial.print(analogRead("||"));
+  Serial.print(analogRead(A2));
+  Serial.print(analogRead("||"));
+  Serial.print(analogRead(A3));
+  Serial.println(analogRead("||"));
 }
