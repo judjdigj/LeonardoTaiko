@@ -114,7 +114,7 @@ void loop() {
       delay(outputDuration_pc);
       Keyboard.releaseAll();
     }
-    else if(temp >=min_threshold && mode == 1){
+    else if(temp >= min_threshold && mode == 1){
       SwitchControlLibrary().pressButton(keymapping_ns[key]);
       SwitchControlLibrary().sendReport();
       delay(outputDuration_ns);
@@ -155,13 +155,13 @@ void extendKey(){
 }
 
 void analogMonitor(){
-  Serial.print(analogRead("||"));
+  Serial.print("||");
   Serial.print(analogRead(A1));
-  Serial.print(analogRead("||"));
+  Serial.print("||");
   Serial.print(analogRead(A0));
-  Serial.print(analogRead("||"));
+  Serial.print("||");
   Serial.print(analogRead(A2));
-  Serial.print(analogRead("||"));
+  Serial.print("||");
   Serial.print(analogRead(A3));
-  Serial.println(analogRead("||"));
+  Serial.println("||");
 }
