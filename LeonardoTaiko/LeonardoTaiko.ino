@@ -75,24 +75,50 @@ void loop() {
   unsigned long currentMillis = millis();
 //Keyboard_NS2===============================================  
   //LK===================
-  if (mode == 1){
-    if(buttonStatusLK == 1 && currentMillis - previousMillisLK_1 >= outputDuration_ns){
+  if (mode == 0){
+    if(buttonStatusLK == 1 && currentMillis - previousMillisLK_1 >= outputDuration_pc){
       Keyboard.release('d');
       buttonStatusLK = -1;
     }
   //LD====================================================================
-    if(buttonStatusLD == 1 && currentMillis - previousMillisLD_1 >= outputDuration_ns){
+    if(buttonStatusLD == 1 && currentMillis - previousMillisLD_1 >= outputDuration_pc){
       Keyboard.release('f');
       buttonStatusLD = -1;
     }
   //RD=============================================================
-    if(buttonStatusRD == 1 && currentMillis - previousMillisRD_1 >= outputDuration_ns){
+    if(buttonStatusRD == 1 && currentMillis - previousMillisRD_1 >= outputDuration_pc){
       Keyboard.release('j');
       buttonStatusRD = -1;
     }
 //RK======================================================
-    if(buttonStatusRK == 1 && currentMillis - previousMillisRK_1 >= outputDuration_ns){
+    if(buttonStatusRK == 1 && currentMillis - previousMillisRK_1 >= outputDuration_pc){
       Keyboard.release('k');
+      buttonStatusRK = -1;
+    }
+  }
+
+  else if (mode == 1){
+    if(buttonStatusLK == 1 && currentMillis - previousMillisLK_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::ZL);
+      SwitchControlLibrary().sendReport();
+      buttonStatusLK = -1;
+    }
+  //LD====================================================================
+    if(buttonStatusLD == 1 && currentMillis - previousMillisLD_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::LCLICK);
+      SwitchControlLibrary().sendReport();
+      buttonStatusLD = -1;
+    }
+  //RD=============================================================
+    if(buttonStatusRD == 1 && currentMillis - previousMillisRD_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::RCLICK);
+      SwitchControlLibrary().sendReport();
+      buttonStatusRD = -1;
+    }
+//RK======================================================
+    if(buttonStatusRK == 1 && currentMillis - previousMillisRK_1 >= outputDuration_ns){
+      SwitchControlLibrary().releaseButton(Button::ZR);
+      SwitchControlLibrary().sendReport();
       buttonStatusRK = -1;
     }
   }
@@ -125,26 +151,41 @@ void loop() {
     }
     threshold = temp*k_increase;
     key = count%4;
-    if(temp >= min_threshold && mode == 0){
+    if(temp >= min_threshold && mode == 1){
       switch(key){
         case 1:
-          Keyboard.press(keymapping[key]);
+          if(buttonStatusLK == -1){
+            buttonStatusLK = 1;
+            SwitchControlLibrary().pressButton(Button::ZL);
+            previousMillisLK_1 = currentMillis;
+          }
           break;
         case 0:
-          Keyboard.press(keymapping[key]);
+          if(buttonStatusLD == -1){
+            buttonStatusLD = 1;
+            SwitchControlLibrary().pressButton(Button::LCLICK);
+            previousMillisLD_1 = currentMillis;
+          }
           break;
         case 2:
-          Keyboard.press(keymapping[key]);
+          if(buttonStatusRD == -1){
+            buttonStatusRD = 1;
+            SwitchControlLibrary().pressButton(Button::RCLICK);
+            previousMillisRD_1 = currentMillis;
+          }
           break;
         case 3:
-          Keyboard.press(keymapping[key]);
+          if(buttonStatusRK == -1){
+            buttonStatusRK = 1;
+            SwitchControlLibrary().pressButton(Button::ZR);
+            previousMillisRK_1 = currentMillis;
+          }
           break;
       }
-      delay(8);
-      Keyboard.releaseAll();
+      SwitchControlLibrary().sendReport();
     }
 
-    else if(temp >= min_threshold && mode == 1){
+    else if(temp >= min_threshold && mode == 0){
       switch(key){
         case 1:
           if(buttonStatusLK == -1){
