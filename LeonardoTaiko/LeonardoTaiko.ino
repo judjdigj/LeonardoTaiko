@@ -182,6 +182,7 @@ void loop() {
           }
           break;
       }
+      SwitchControlLibrary().sendReport();
       delay(10);
     }
 
