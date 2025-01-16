@@ -2,12 +2,14 @@
 #include <Keyboard.h>
 #include <EEPROM.h>
 
+
 //#define DEBUG
 
 const float min_threshold = 25;  // The minimum rate on triggering a input
 const int cd_length = 16; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
+
 const int outputDuration_pc = 20; // For PC. How long a key should be pressed when triggering a input.
 const int outputDuration_ns = 20; // For NS. How long a key should be pressed when triggering a input.
 const int outputDuration_sim = 8; // For NS. How long a key should be pressed when triggering a input.
@@ -19,7 +21,6 @@ const uint16_t keymapping_ns_2[4] = {Button::LCLICK, Button::ZL, Button::RCLICK,
 const uint16_t keymapping_ns_3[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
 
 const int keymapping[4] = {'f','d','j','k'};
-const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
 
 // 模式与计算按键与缓存
@@ -100,6 +101,7 @@ void setup() {
 
 
 void loop() {
+
   unsigned long currentMillis = millis();
   //Keyboard=============================================== 
   if (mode == 0){
@@ -384,6 +386,7 @@ void loop() {
             break;
           }
       }
+
       SwitchControlLibrary().sendReport();
       delay(10);
     }
@@ -410,8 +413,22 @@ void extendKey(){
     if(digitalRead(1) == HIGH && digitalRead(0) == LOW){
       pushHat(Hat::DOWN);
     }
+
     if(digitalRead(1) == LOW && digitalRead(0) == LOW){
       pushButton(Button::B);
     }
   }
+  #endif
+}
+
+void analogMonitor(){
+  Serial.print("||");
+  Serial.print(analogRead(A1));
+  Serial.print("||");
+  Serial.print(analogRead(A0));
+  Serial.print("||");
+  Serial.print(analogRead(A2));
+  Serial.print("||");
+  Serial.print(analogRead(A3));
+  Serial.println("||");
 }
