@@ -2,13 +2,16 @@
 #include <Keyboard.h>
 #include <EEPROM.h>
 
+//#define DEBUG
 
-const float min_threshold = 50;  // The minimum rate on triggering a input
-const int cd_length = 20; //Buffer loop times.
+const float min_threshold = 25;  // The minimum rate on triggering a input
+const int cd_length = 16; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
-const int outputDuration_pc = 30; // For PC. How long a key should be pressed when triggering a input.
-const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
+const int outputDuration_pc = 20; // For PC. How long a key should be pressed when triggering a input.
+const int outputDuration_ns = 20; // For NS. How long a key should be pressed when triggering a input.
+const int outputDuration_sim = 8; // For NS. How long a key should be pressed when triggering a input.
+
 
 //{A3, A0, A1, A2}
 const uint16_t keymapping_ns[4] = {Button::LCLICK, Button::ZL, Button::RCLICK, Button::ZR};
@@ -20,7 +23,7 @@ const uint16_t keymapping_ns_extend[] = {Button::PLUS, Hat::RIGHT};
 
 
 // 模式与计算按键与缓存
-int mode; //0 for keyboard, 1 for switch
+int mode; //0 for steam, 1 for switch, 2 for simulator
 int key;
 const int buffer_size = cd_length*4;
 int buffer[buffer_size];
@@ -66,11 +69,16 @@ void setup() {
   } else if (pc_status == LOW && ns_status == HIGH) {
     mode = 0;     // 按下PC按键，初始化为PC模式
     EEPROM.write(0, 0);   // 写入EEPROM
+  } else if (pc_status == LOW && ns_status == LOW){
+    mode = 2;
+    EEPROM.write(0, 2);
   } else {
     // 没有按任何按键，从EEPROM中读取之前的控制状态
     mode = EEPROM.read(0);
   }
-
+  #ifdef DEBUG
+  delay(1000);
+  #endif
   // 初始化开始连接
   if (mode == 1) {  
     #ifdef DEBUG
@@ -80,6 +88,11 @@ void setup() {
   } else if(mode == 0) {
     #ifdef DEBUG
     Serial.println("start with PC mode");
+    #endif
+    Keyboard.begin();              // 初始化启动按键输入
+  } else if(mode == 2) {
+    #ifdef DEBUG
+    Serial.println("start with Sim mode");
     #endif
     Keyboard.begin();              // 初始化启动按键输入
   }
@@ -238,6 +251,7 @@ void loop() {
       }
     }
   }
+
   extendKey();
   bool output = false;
   int sensorValue[] = {analogRead(A0),analogRead(A3),analogRead(A1),analogRead(A2)};
@@ -266,7 +280,7 @@ void loop() {
     }
     threshold = temp*k_increase;
     key = count%4;
-    if(temp >= min_threshold && mode == 0){
+    if(temp >= min_threshold*0.6 && mode == 0){
       switch(key){
         case 1:
           buttonStatusLK = 1;
@@ -289,9 +303,9 @@ void loop() {
           previousMillisRK_1 = currentMillis;
           break;
       }
-  //    delay(0);
+      delay(10);
     }
-    else if(temp >= min_threshold && mode == 1){
+    else if(temp >= min_threshold*0.6 && mode == 1){
       switch(key){
         case 1:
           if(buttonStatusLK == -1){
@@ -371,7 +385,12 @@ void loop() {
           }
       }
       SwitchControlLibrary().sendReport();
- //     delay(10);
+      delay(10);
+    }
+    else if(temp >= min_threshold*0.6 && mode == 2){
+      Keyboard.press(keymapping[key]);
+      delay(outputDuration_sim);
+      Keyboard.release(keymapping[key]);
     }
   }
   
