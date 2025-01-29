@@ -5,13 +5,13 @@
 
 //#define DEBUG
 
-const float min_threshold = 25;  // The minimum rate on triggering a input
-const int cd_length = 16; //Buffer loop times.
+const float min_threshold = 40;  // The minimum rate on triggering a input
+const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
 
-const int outputDuration_pc = 20; // For PC. How long a key should be pressed when triggering a input.
-const int outputDuration_ns = 20; // For NS. How long a key should be pressed when triggering a input.
+const int outputDuration_pc = 30; // For PC. How long a key should be pressed when triggering a input.
+const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
 const int outputDuration_sim = 8; // For NS. How long a key should be pressed when triggering a input.
 
 
@@ -101,7 +101,11 @@ void setup() {
 
 
 void loop() {
+  #ifdef DEBUG
+  analogMonitor();
+  #endif 
 
+  #ifndef DEBUG
   unsigned long currentMillis = millis();
   //Keyboard=============================================== 
   if (mode == 0){
@@ -403,6 +407,7 @@ void loop() {
   else if(threshold > min_threshold) {
     threshold = threshold*k_decay;
   }
+  #endif
 }
 
 void extendKey(){
@@ -418,17 +423,18 @@ void extendKey(){
       pushButton(Button::B);
     }
   }
-  #endif
 }
 
 void analogMonitor(){
-  Serial.print("||");
-  Serial.print(analogRead(A1));
-  Serial.print("||");
-  Serial.print(analogRead(A0));
-  Serial.print("||");
-  Serial.print(analogRead(A2));
-  Serial.print("||");
-  Serial.print(analogRead(A3));
-  Serial.println("||");
+  if(analogRead(A1)>20||analogRead(A2)>20||analogRead(A3)>20||analogRead(A0)>20){
+    Serial.print("||");
+    Serial.print(analogRead(A0));
+    Serial.print("||");
+    Serial.print(analogRead(A1));
+    Serial.print("||");
+    Serial.print(analogRead(A2));
+    Serial.print("||");
+    Serial.print(analogRead(A3));
+    Serial.println("||");
+  }
 }
