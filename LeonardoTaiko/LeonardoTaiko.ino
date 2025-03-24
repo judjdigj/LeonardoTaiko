@@ -5,14 +5,14 @@
 
 //#define DEBUG
 
-const float min_threshold = 40;  // The minimum rate on triggering a input
+const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
 const float k_decay = 0.99; //decay speed on the dynamite threshold.
 const float k_increase = 0.8;  //Dynamite threshold range.
 
 const int outputDuration_pc = 30; // For PC. How long a key should be pressed when triggering a input.
 const int outputDuration_ns = 30; // For NS. How long a key should be pressed when triggering a input.
-const int outputDuration_sim = 8; // For NS. How long a key should be pressed when triggering a input.
+const int outputDuration_sim = 10; // For NS. How long a key should be pressed when triggering a input.
 
 
 //{A3, A0, A1, A2}
@@ -209,7 +209,7 @@ void loop() {
         buttonStatusRD = -1;
       }
     }
-    else if(buttonStatusLK == 3){
+    else if(buttonStatusRD == 3){
       if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
         SwitchControlLibrary().releaseButton(Button::RCLICK);
         SwitchControlLibrary().sendReport();
@@ -231,29 +231,29 @@ void loop() {
       buttonStatusRK = -1;
     }
     else if(buttonStatusRK == 2){
-      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
+      if(currentMillis - previousMillisRK_1 >= outputDuration_ns){
         SwitchControlLibrary().releaseButton(Button::ZR);
         SwitchControlLibrary().sendReport();
       }
-      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
+      if(currentMillis - previousMillisRK_2 >= outputDuration_ns){
         SwitchControlLibrary().releaseButton(Button::R);
         SwitchControlLibrary().sendReport();
-        buttonStatusRD = -1;
+        buttonStatusRK = -1;
       }
     }
-    else if(buttonStatusLK == 3){
-      if(currentMillis - previousMillisRD_1 >= outputDuration_ns){
+    else if(buttonStatusRK == 3){
+      if(currentMillis - previousMillisRK_1 >= outputDuration_ns){
         SwitchControlLibrary().releaseButton(Button::ZR);
         SwitchControlLibrary().sendReport();
       }
-      if(currentMillis - previousMillisRD_2 >= outputDuration_ns){
+      if(currentMillis - previousMillisRK_2 >= outputDuration_ns){
         SwitchControlLibrary().releaseButton(Button::R);
         SwitchControlLibrary().sendReport();
       }
-      if(currentMillis - previousMillisRD_3 >= outputDuration_ns){
+      if(currentMillis - previousMillisRK_3 >= outputDuration_ns){
         SwitchControlLibrary().releaseButton(Button::X);
         SwitchControlLibrary().sendReport();
-        buttonStatusRD = -1;
+        buttonStatusRK = -1;
       }
     }
   }
