@@ -1,5 +1,7 @@
-# New version is in development.  
-Huge thanks to [lty2008one](https://github.com/lty2008one)'s work, a new code which is basically re-written on the key pressing part brought significant improvement on Switch performance. However it still needs some tweaks for stable usage. The improved code is on the **develop** branch.
+# Async input has been implemented
+The asynchronous input has been added to the main channel. While it's inspired by lty2008one's fork, the code was dramatically different. You can always check his fork.
+Again, shout out to [lty2008one](https://github.com/lty2008one).
+
 # LeonardoTaiko
 
 [中文文档](https://github.com/judjdigj/LeonardoTaiko/blob/main/README_CN.md)
@@ -11,7 +13,7 @@ Play demo: Senpuu no Mai [Heaven] Full Combo.
 
 ## Feature
 
-* Nintendo Switch Support (with good performace)
+* Nintendo Switch Support
 * Easy to build.
 
 ## Hardware Parts
