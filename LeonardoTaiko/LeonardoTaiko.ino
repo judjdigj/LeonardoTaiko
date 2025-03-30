@@ -1,39 +1,40 @@
 #include <Keyboard.h>
 #include <NintendoSwitchControlLibrary.h>
 
+#define DEBUG
+
 bool pressedStatus = 0;
 const int initialThredholds = 30;
 int bufferTime = 1;
 
-
 int key = -1;
 const int minThredholds = 0.6*initialThredholds;
 int valueLK, valueLD, valueRD, valueRK = 0;
-int peakLK, peakLD, peakRD, peakRK = 20;
-int currentLK, currentLD, currentRD, currentRK = 0;
+int peakLK, peakLD, peakRD, peakRK = 0;
+//int currentLK, currentLD, currentRD, currentRK = 0;
+int previousLK, previousLD, previousRD, previousRK = 0;
 
 void setup() {
-
+  Serial.begin(115200);
+//  ADCSRA = (ADCSRA & 0xf8) | 0x04;
 }
 
 void loop() {
+
+#ifdef DEBUG
+  analogMonitorA0();
+#endif
+
+#ifndef DEBUG
 //Signal Peak Detection
-  currentLK = analogRead(A0);
-  currentLD = analogRead(A3);
-  currentRD = analogRead(A1);
-  currentRK = analogRead(A2);
-  if(currentLK > peakLK){
+  int leftLK = analogRead(A0);
+  int currentLK = analogRead(A0);
+  int rightLK = analogRead(A0);
+
+  if(currentLK >= rightLK && currentLK >= leftLK){
     peakLK = currentLK;
   }
-  if(currentLD > peakLD){
-    peakLD = currentLD;
-  }
-  if(currentRD > peakRD){
-    peakRD = currentRD;
-  }
-  if(currentRK > peakRK){
-    peakRK = currentRK;
-  }
+
 
 //Hit Detection
   valueLK = analogRead(A0);
@@ -53,30 +54,46 @@ void loop() {
   if(valueRK - peakRK >= initialThredholds){
     pressedStatus = 1;
   }
+  
+//Buffer
 
-
-  //Buffer
   if(pressedStatus){
     unsigned long previousTime = millis();
-    unsigned long currentTime = millis();
-    int maxValue = 0;
-    int currentValue = 0;
+    unsigned long currentTime = previousTime;
+    int maxValueLK = 0;
+    int currentValueLK = 0;
 
-    while(currentTime-previousTime <= bufferTime){
-      for(int i=A0; i<=A3; i++){
-        currentValue = analogRead(i);
-        if(currentValue > maxValue){
-          maxValue = currentValue;
-          key = i;
-        }
+    while(currentTime - previousTime <= bufferTime){
+      currentValueLK = analogRead(A0);
+      if(maxValueLK < currentValueLK){
+        maxValueLK = currentValueLK;
       }
       currentTime = millis();
     }
+    peakLK = maxValueLK;
   }
 
 //Key Output
-  Serial.println(key);
+  if(key != -1){
+    Serial.println(key);
+  }
   key = -1;
-  pressedStatus = (0);
+  pressedStatus = 0;
   delay(7);
+
+#endif
+
+}
+
+void analogMonitorA0(){
+  int value = analogRead(A0);
+  if(value > 10){
+    int previousTime = millis();
+    int currentTime = previousTime;
+    while(currentTime - previousTime < 1){
+      Serial.println(analogRead(A0));
+      currentTime = millis();
+    }
+  //  Serial.println("==============");
+  }
 }
