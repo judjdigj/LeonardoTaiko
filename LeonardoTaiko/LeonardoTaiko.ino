@@ -58,6 +58,7 @@ unsigned long previousMillisRK_3 = 0;
 
 
 void setup() {
+//  analogReference(INTERNAL);
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   int pc_status = digitalRead(0);
