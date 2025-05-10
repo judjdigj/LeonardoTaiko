@@ -4,6 +4,7 @@
 
 
 //#define DEBUG
+#define MODE_SELECTOR
 
 const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
@@ -22,9 +23,7 @@ const uint16_t keymapping_ns_3[4] = {Button::LCLICK, Button::ZL, Button::RCLICK,
 
 const int keymapping[4] = {'f','d','j','k'};
 
-
-// 模式与计算按键与缓存
-int mode; //0 for steam, 1 for switch, 2 for simulator
+int mode; //0 for steam, 1 for switch, 2 for simulator; 
 int key;
 const int buffer_size = cd_length*4;
 int buffer[buffer_size];
@@ -59,45 +58,47 @@ unsigned long previousMillisRK_3 = 0;
 
 void setup() {
 //  analogReference(INTERNAL);
+  #ifdef MODE_SELECTOR
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   int pc_status = digitalRead(0);
   int ns_status = digitalRead(1);
-
-  // 初始化读取按键电平
   if (ns_status == LOW && pc_status == HIGH) {
-    mode = 1;     // 按下NS按键，初始化为NS模式
-    EEPROM.write(0, 1);   // 写入EEPROM
+    mode = 1;     
+    EEPROM.write(0, 1);   
   } else if (pc_status == LOW && ns_status == HIGH) {
-    mode = 0;     // 按下PC按键，初始化为PC模式
-    EEPROM.write(0, 0);   // 写入EEPROM
+    mode = 0;    
+    EEPROM.write(0, 0); 
   } else if (pc_status == LOW && ns_status == LOW){
     mode = 2;
     EEPROM.write(0, 2);
   } else {
-    // 没有按任何按键，从EEPROM中读取之前的控制状态
     mode = EEPROM.read(0);
   }
+  #endif
+
   #ifdef DEBUG
   delay(1000);
   #endif
-  // 初始化开始连接
+
+  #ifdef MODE_SELECTOR
   if (mode == 1) {  
     #ifdef DEBUG
     Serial.println("start with NS mode");
     #endif
-    pushButton(Button::A, 500, 3); // 初始化时按键自动连接到SWITCH
+    pushButton(Button::A, 500, 3); 
   } else if(mode == 0) {
     #ifdef DEBUG
     Serial.println("start with PC mode");
     #endif
-    Keyboard.begin();              // 初始化启动按键输入
+    Keyboard.begin();
   } else if(mode == 2) {
     #ifdef DEBUG
     Serial.println("start with Sim mode");
     #endif
-    Keyboard.begin();              // 初始化启动按键输入
+    Keyboard.begin();
   }
+  #endif
 }
 
 
