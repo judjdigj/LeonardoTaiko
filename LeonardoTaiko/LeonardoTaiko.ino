@@ -4,7 +4,7 @@
 
 
 //#define DEBUG
-//#define MODE_SELECTOR
+#define MODE_SELECTOR
 
 const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
