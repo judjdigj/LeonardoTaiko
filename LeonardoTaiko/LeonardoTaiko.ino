@@ -4,7 +4,7 @@
 
 
 //#define DEBUG
-//#define MODE_SELECTOR
+#define MODE_SELECTOR
 
 const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
@@ -57,7 +57,7 @@ unsigned long previousMillisRK_3 = 0;
 
 
 void setup() {
-//  analogReference(INTERNAL);
+  //analogReference(INTERNAL);
   #ifdef MODE_SELECTOR
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
