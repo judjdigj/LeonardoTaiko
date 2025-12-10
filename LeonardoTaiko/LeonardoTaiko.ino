@@ -415,7 +415,8 @@ void loop() {
 void extendKey(){
   if (mode == 1){
     if(digitalRead(0) == HIGH && digitalRead(1) == LOW){
-      pushHat(Hat::UP);
+      //pushHat(Hat::UP);
+      pushButton(Button::X);
     }
     if(digitalRead(1) == HIGH && digitalRead(0) == LOW){
       pushHat(Hat::DOWN);
