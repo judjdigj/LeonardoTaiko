@@ -4,7 +4,7 @@
 
 
 //#define DEBUG
-#define MODE_SELECTOR
+//#define MODE_SELECTOR //Enable PC/NS/Sim Mode Seletctor.
 
 const float min_threshold = 50;  // The minimum rate on triggering a input
 const int cd_length = 20; //Buffer loop times.
@@ -23,7 +23,7 @@ const uint16_t keymapping_ns_3[4] = {Button::LCLICK, Button::ZL, Button::RCLICK,
 
 const int keymapping[4] = {'f','d','j','k'};
 
-int mode; //0 for steam, 1 for switch, 2 for simulator; 
+int mode = 0; //0 for steam, 1 for switch, 2 for simulator; 
 int key;
 const int buffer_size = cd_length*4;
 int buffer[buffer_size];
