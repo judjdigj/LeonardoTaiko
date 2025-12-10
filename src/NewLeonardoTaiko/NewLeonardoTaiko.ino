@@ -5,9 +5,9 @@
 //Parameter that can be adjusted by user depends of the sensor
 const int windows_size = 25; //Step for triggering.
 const int cd_length = 5;//Buffer size for misfire detection.
+const int break_check_limit = 12;//Limit of break check when trying releasing a input.
 const int reset_threshold = 8;//threshold to release a input.
 const int trigger_threshold = 150;//threshold to press a input
-const int break_check_limit = 12;//Limit of break check when trying releasing a input.
 const int keymapping[4] = {'d','j','k','f'};
 
 //#define DEBUG

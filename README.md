@@ -97,7 +97,7 @@ Also some commented line can be found for different debug purposes.
 ## Algorithm
 Once a analog value is higher the ```threshold```, a input will be detected. 
 
-### To Avoid Mistaken Input
+### Misfire Detection
 We all know AC Taiko was built with 4 parts: left rim, left surface, right surface, right rim.
 ![Taiko](https://github.com/judjdigj/LeonardoTaiko/blob/main/pics/TaikoStructure.jpg?raw=true)
 
@@ -110,7 +110,7 @@ To prevent mistaken input, we need to create a buffer window. It will start stor
 
 The parameter ```cd_length``` will effect the buffer size. If it was set too large, it will take a significant time to find the largest number, causing input latency. If it was too small, the buffer windows may not cover the largest value from the sensor.
 
-### To Avoid Double input on One Hit.
+### Debounce
 
 If the buffer time and key press time is too short, even shorter than the vibrating time, when the whole input process is over, the sensor will still sent signal, and again once it's higher than the threshold, another input will be triggered. Causing double input in one hit. The harder you hit the drum, the more significant this issue will be.
 ![noise3](https://github.com/judjdigj/LeonardoTaiko/blob/main/pics/Notes_240218_172950.jpg?raw=true)
@@ -120,7 +120,7 @@ The dynamic threshold will be the maximun analogValue in buffer multiplied by ``
 
 ### Simultaneous Input (Big Notes)
 
-This algorithm support simultaneous input (you need that to hit big notes on console version of Taiko no Tatsujin for a higher score). Technically you can't do that with this code. However with the new button pressing code, 2 input can happened at a really short time. Which is good enough for Switch to recongnized it as simultaneous input.
+For Home console and PC version of Taiko no Tatsujin, you need to press two button simultaneously to hit big notes for higher score. In the arcade you don't need to do that. In theory, in You need to hit the drum harder at big notes for higher score. However in newest arcade version it's also obsolete. This code also doesn't provide support for true simultaneous input. But you can always map one hit to multiple buttons to simulate simultaneous input.
 
 ### Others
 You can also imply some smoothing filter to preprocessing the raw analog input signal. In my case, the sensors are good enough.
