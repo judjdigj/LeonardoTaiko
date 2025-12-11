@@ -38,7 +38,7 @@ class AdvancedSerialPlotter:
         self.fig.suptitle('Arduino Analog Input Real-time Monitoring', fontsize=16)
         self.ax.set_xlabel('Time (seconds)', fontsize=12)
         self.ax.set_ylabel('Analog Value (0-1024)', fontsize=12)
-        self.ax.set_ylim(-50, 300)
+        self.ax.set_ylim(-25, 150)
         self.ax.grid(True, alpha=0.3)
         
         # 创建4条曲线，不同颜色
@@ -68,7 +68,7 @@ class AdvancedSerialPlotter:
         self.time_slider = Slider(
             ax=self.ax_slider,
             label='Time Window (seconds)',
-            valmin=2,
+            valmin=1,
             valmax=300,  # 最大5分钟
             valinit=self.time_window,
             valstep=1

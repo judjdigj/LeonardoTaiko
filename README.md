@@ -118,6 +118,18 @@ That's why I imported dynamic threshold. the harder you hit the drum, the higher
 ![noise4](https://github.com/judjdigj/LeonardoTaiko/blob/main/pics/Notes_240218_173352.jpg?raw=true)
 The dynamic threshold will be the maximun analogValue in buffer multiplied by ```k_increase```. and in every loop the current threshold will be multiplied by ```k_decay``` until it's back to the original threshold.
 
+### Debounce 2.0
+In src/NewLeonardoTaiko, we have attempted to introduce a new dynamic threshold method.
+
+During the actual ```analogRead()``` sampling process on the Arduino Leonardo, after hitting the drum, the sensor values read exhibit a gradually decreasing trend rather than oscillating between positive and negative values. To address this, we can create a sliding window. Within this window, the oldest value entering the window is used as a baseline to dynamically adjust the threshold, thereby determining whether the most recent value entering the window corresponds to a triggered hit.
+
+In practical operation, separately adjusting the threshold changes for each of the four channels can be cumbersome. Therefore, we use the value obtained by subtracting the oldest value from the latest value within the sliding window to derive a unified change value.
+
+Under this approach, since the sensor values typically show a decreasing trend after a strike, after processing with the sliding window, if the resulting value is a suddenly increasing positive number, it indicates that the sensor is being hit. If it is negative, it signifies that the sensor value is decreasing, indicating no hit.
+
+By leveraging this characteristic, we can achieve debounce purposes by setting and adjusting relevant parameters.
+
+
 ### Simultaneous Input (Big Notes)
 
 For Home console and PC version of Taiko no Tatsujin, you need to press two button simultaneously to hit big notes for higher score. In the arcade you don't need to do that. In theory, in You need to hit the drum harder at big notes for higher score. However in newest arcade version it's also obsolete. This code also doesn't provide support for true simultaneous input. But you can always map one hit to multiple buttons to simulate simultaneous input.
@@ -142,7 +154,30 @@ Every time a hit was detected, the threshold will change to the largest pin valu
 Every loop the current threshold will multiply ```k_decay``` in order to go back to the original threshold.
 
 
-###
+## Parameters (and the recommended value)2.0:
+
+### ```windows_size = 25```
+
+The size of the sliding window used to determine the dynamic threshold.
+
+### ```trigger_threshold = 150```
+
+The threshold for triggering a strike, which initiates crosstalk detection. Since the INTERNAL 1.1V is used as the reference voltage, the signal becomes more pronounced compared to the default 5V, resulting in a higher trigger threshold than in previous versions.
+
+### ```cd_length = 5```
+How many loops to read all 4 sensors' ```analogValue```. Since ```cd_length``` define one loop for all 4 sensors, ```buffer_size``` should be ```4*cd_length```.  
+Which means you can change this value to adjust the buffer size. The smaller it was set, the faster response you will get after hit the drum. 
+
+### ```break_check_limit = 12``` & ```reset_threshold = 8```
+
+```break_check_limit``` defines the window for monitoring signal changes after a strike, while ```reset_threshold``` specifies the change value that should be considered significant.
+
+After a strike, the triggered sensor is locked, and the debouncing algorithm is executed. Due to inherent signal jitter, merely detecting a negative change value during debouncing is insufficient to confirm that the sensor is no longer being struck. Therefore, ```break_check_limit``` is introduced.
+
+When the sensor's change value exceeds ```reset_threshold```, it indicates that the signal has not yet entered a consistent downward trend. If the change value falls below ```reset_threshold```, the algorithm continuously reads the change values. If the number of consecutive change values below ```reset_threshold``` reaches the limit set by ```break_check_limit```, it indicates that the sensor signal has transitioned into a declining trend, confirming the strike has ended. The lock is then released, and debouncing completes.
+
+
+
 
 ## Credit
 Nintendo Switch support from
