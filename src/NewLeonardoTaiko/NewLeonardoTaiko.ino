@@ -298,7 +298,7 @@ void analogThresholdDynamicValueMonitor(){
     timer = millis();
   }
 
-  if(millis() - timer < 500){
+  //if(millis() - timer < 500){
     Serial.print(A0_Value);
     Serial.print("||");
     Serial.print(A1_Value);
@@ -306,7 +306,7 @@ void analogThresholdDynamicValueMonitor(){
     Serial.print(A2_Value);
     Serial.print("||");
     Serial.println(A3_Value);
-  }
+  //}
 }
 
 void analogThresholdMonitor(){
